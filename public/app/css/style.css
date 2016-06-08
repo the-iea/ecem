@@ -1,2 +1,26 @@
-html, body { height: 100%; margin: 0; }
-#map { height: 100%; }
+html, body { 
+	height: 100%;
+	margin: 0;
+}
+
+#map {
+	height: 100%;
+}
+
+#ecem-banner {
+  z-index: 1500;
+  position: absolute;
+  width: 100%;
+  top: 0;
+  margin: 0 auto;
+  text-align: center;
+  pointer-events: none;
+}
+
+.ecem {
+	background-color: #97283B;
+}
+
+.leaflet-container {
+  background: none;
+}

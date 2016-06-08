@@ -3,3 +3,4 @@
 /bundle.*
 /*.log
 /node_modules/
+/.tern-project

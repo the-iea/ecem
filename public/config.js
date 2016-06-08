@@ -24,6 +24,7 @@ System.config({
     "fetch": "github:github/fetch@0.10.1",
     "leaflet": "github:Leaflet/Leaflet@1.0.0-rc.1",
     "leaflet-loading": "github:ebrelsford/Leaflet.loading@0.1.20",
+    "topojson": "github:mbostock/topojson@1.6.26",
     "traceur": "github:jmcriffey/bower-traceur@0.0.93",
     "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.93",
     "github:jspm/nodelibs-assert@0.1.0": {
