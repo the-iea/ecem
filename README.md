@@ -20,4 +20,4 @@ While running in development mode, any code can be changed and a simple browser 
 
 ## Bundle creation for production use
 
-The production website needs a minified bundle which includes all JavaScript and CSS code. It can be created with `npm run build` which builds `bundle.min.js`. Copy this file into the gh-pages branch to update the website. Any other resources that are loaded dynamically (like GeoJSON assets or other data) have to be copied over to the gh-pages branch manually. Currently, this is everything in the /public/app/data folder. Note that every git push to gh-pages updates the website immediately.
+The production website needs a minified bundle which includes all JavaScript and CSS code. It can be created with `npm run build` which builds `bundle.min.js`. Copy this file into the gh-pages branch to update the website. Any other resources that are loaded dynamically (like GeoJSON assets or other data) have to be copied over to the gh-pages branch manually. Currently, this is everything in the /public/app/data and /public/app/img folders. Note that every git push to gh-pages updates the website immediately.
