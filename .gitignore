@@ -1,0 +1,5 @@
+/.project
+/public/jspm_packages/
+/bundle.*
+/*.log
+/node_modules/

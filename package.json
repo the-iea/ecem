@@ -1,0 +1,35 @@
+{
+  "private": true,
+  "scripts": {
+    "serve": "http-server -p 8095 -c0",
+    "postinstall": "jspm install --yes",
+    "build": "npm run build-src && npm run build-min",
+    "build-src": "jspm bundle-sfx app/main bundle.src.js --skip-source-maps",
+    "build-min": "jspm bundle-sfx app/main bundle.min.js --skip-source-maps --minify",
+    "prepublish": "npm run build"
+  },
+  "devDependencies": {
+    "http-server": "^0.9.0",
+    "jspm": "^0.16.36"
+  },
+  "jspm": {
+    "directories": {
+      "baseURL": "public"
+    },
+    "dependencies": {
+      "bootstrap": "github:twbs/bootstrap@^3.3.5",
+      "bootstrap-native": "npm:bootstrap.native@^1.0.1",
+      "c3": "npm:c3@^0.4.11",
+      "css": "github:systemjs/plugin-css@^0.1.13",
+      "fetch": "github:github/fetch@^0.10.1",
+      "leaflet": "github:Leaflet/Leaflet@^1.0.0-rc.1",
+      "leaflet-loading": "github:ebrelsford/Leaflet.loading@^0.1.16"
+    },
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.8.22",
+      "babel-runtime": "npm:babel-runtime@^5.8.20",
+      "clean-css": "npm:clean-css@^3.4.6",
+      "core-js": "npm:core-js@^1.1.4"
+    }
+  }
+}
