@@ -24,7 +24,6 @@ PATH_CLUSTERSHP = os.path.join(PATH_DATA, 'cluster_borders', 'Clusters_Borders.s
 # Output files
 PATH_GENERATED = os.path.join(os.path.dirname(__file__), '..', 'generated')
 PATH_COUNTRYGEOJSON = os.path.join(PATH_GENERATED, 'countries.geojson')
-PATH_COUNTRYGEOJSON = os.path.join(PATH_GENERATED, 'countries.geojson')
 
 # Final output destination
 PATH_APP_DATA = os.path.join(os.path.dirname(__file__), '..', '..', 'public', 'app', 'data')
