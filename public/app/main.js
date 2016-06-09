@@ -67,7 +67,6 @@ fetch('app/data/countries.geojson')
   .then(response => response.json())
   .then(countries => {
     let layer = L.geoJson(countries, {
-      filter: feature => feature.properties.continent === 'Europe',
       style: feature => ({
         color: 'black',
         weight: 3,
@@ -77,7 +76,6 @@ fetch('app/data/countries.geojson')
         //fillColor: 'lightblue'
       })
     }).bindPopup(layer => {
-      // iso_a2, iso_a3 -> uppercase ISO country codes
       return '<pre>' + JSON.stringify(layer.feature.properties, null, 2) + '</pre>'
     }).addTo(map)
     

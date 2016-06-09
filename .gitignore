@@ -4,3 +4,5 @@
 /*.log
 /node_modules/
 /.tern-project
+/preprocess/generated/
+__pycache__
