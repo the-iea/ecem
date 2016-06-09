@@ -5,6 +5,7 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css!'
 import 'leaflet-loading'
 import 'leaflet-loading/src/Control.Loading.css!'
+
 import 'bootstrap/css/bootstrap.css!'
 //import topojson from 'topojson'
 
@@ -22,16 +23,17 @@ let map = L.map('map', {
 L.control.scale().addTo(map)
 
 const CLUSTER_COLOURS = {
-  0: 'lightblue',
-  1: 'green',
-  2: 'pink',
-  3: 'yellow',
-  4: 'violet',
-  5: 'peach',
-  6: 'indigo',
-  7: 'navy',
-  8: 'gray',
-  9: 'orange'    
+  0: '#d7191c',
+  1: '#f2854e',
+  2: '#fdb569',
+  3: '#fdd28b',
+  4: '#fef0ad',
+  5: '#eff8ba',
+  6: '#d1ecb0',
+  7: '#b2e0a6',
+  8: '#88c4aa',
+  9: '#59a3b2',
+  99: '#2b83ba'
 }
 
 fetch('app/data/clusters.geojson')
@@ -43,8 +45,16 @@ fetch('app/data/clusters.geojson')
         weight: 1,
         opacity: 1,
         fillOpacity: 1,
-        fillColor: CLUSTER_COLOURS[parseInt(feature.properties.Couleur)] || CLUSTER_COLOURS[0],
-      })
+        fillColor: CLUSTER_COLOURS[parseInt(feature.properties.Couleur)] || CLUSTER_COLOURS[99],
+      }),
+      onEachFeature: (feature, layer) => {
+        L.marker(layer.getBounds().getCenter(), {
+          icon: L.divIcon({
+            className: 'cluster-label',
+            html: feature.properties.Clusters_c
+          })
+        }).addTo(map)
+      }
     }).bindPopup(layer => {
       return '<pre>' + JSON.stringify(layer.feature.properties, null, 2) + '</pre>'
     }).addTo(map)

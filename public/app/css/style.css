@@ -24,3 +24,10 @@ html, body {
 .leaflet-container {
   background: none;
 }
+
+.cluster-label {
+	color: black;
+	background-color: white;
+	width: initial !important;
+	height: initial !important;
+}
