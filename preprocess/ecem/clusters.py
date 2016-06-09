@@ -47,6 +47,11 @@ def get_clusters_by_country():
   return country_clusters
 
 def create_country_geojson():
+  # FIXME cluster NO_C3 cannot be merged with the other NO clusters as it has invalid geometry
+  # TopologyException: Input geom 1 is invalid: Self-intersection at or near point
+  # 4098107.3181225932 4268514.4727223022 at 4098107.3181225932 4268514.4727223022
+  # QGIS confirms that and says "segments 2341 and 2343 intersect at 4098107.31812 and 4268514.47272
+
   inDriver = ogr.GetDriverByName(ESRI_SHP)
   inDataSource = inDriver.Open(PATH_CLUSTERSHP, 0)
   inLayer = inDataSource.GetLayer()
