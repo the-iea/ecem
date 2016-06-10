@@ -12,9 +12,7 @@ def get_countries():
     rows = csv.reader(csvfile)
     next(rows) # skip first line
     for row in rows:
-      if row[0] == '': # ignore empty lines at the end
-        break
-      name = row[1]
+      name = { 'en': row[1] }
       code = row[2]
       countries[code] = Country(name=name, code=code)
   return countries

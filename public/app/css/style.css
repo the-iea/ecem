@@ -25,9 +25,18 @@ html, body {
   background: none;
 }
 
-.cluster-label {
+.polygon-label {
 	color: black;
 	background-color: white;
 	width: initial !important;
 	height: initial !important;
+}
+
+.c3-tooltip-container {
+	z-index: 1000 !important;
+}
+
+.timeseries-popup .leaflet-popup-content {
+	width: 600px;
+	height: 300px;
 }

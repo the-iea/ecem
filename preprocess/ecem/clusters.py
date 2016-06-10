@@ -8,7 +8,7 @@ ogr.UseExceptions()
 osr.UseExceptions()
 
 import ecem.countries
-from ecem.util import minify_json
+from ecem.util import minify_json, PATH_DATA, PATH_GENERATED, PATH_APP_DATA
 
 # OGR driver names
 ESRI_SHP = 'ESRI Shapefile'
@@ -24,17 +24,14 @@ GEOJSON_COUNTRY_CODE = 'country_code'
 GEOJSON_COLOR_IDX = 'color_idx'
 
 # Input files
-PATH_DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
 PATH_CLUSTERNAMES = os.path.join(PATH_DATA, 'ECEM_cluster_names.csv')
 PATH_CLUSTERSHP = os.path.join(PATH_DATA, 'cluster_borders', 'Clusters_Borders.shp')
 
 # Output files
-PATH_GENERATED = os.path.join(os.path.dirname(__file__), '..', 'generated')
 PATH_COUNTRYGEOJSON = os.path.join(PATH_GENERATED, 'countries.geojson')
 PATH_CLUSTERGEOJSON = os.path.join(PATH_GENERATED, 'clusters.geojson')
 
 # Final output destination
-PATH_APP_DATA = os.path.join(os.path.dirname(__file__), '..', '..', 'public', 'app', 'data')
 PATH_APP_COUNTRYGEOJSON = os.path.join(PATH_APP_DATA, 'countries.geojson')
 PATH_APP_CLUSTERGEOJSON = os.path.join(PATH_APP_DATA, 'clusters.geojson')
 
@@ -49,8 +46,6 @@ def get_clusters_by_country():
     rows = csv.reader(csvfile)
     next(rows) # skip first line
     for row in rows:
-      if row[0] == '': # ignore empty lines at the end
-        break
       country_code = row[0]
       cluster_code = row[2]
       country_clusters[country_code].append(cluster_code)
