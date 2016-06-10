@@ -7,7 +7,6 @@ import 'leaflet-loading'
 import 'leaflet-loading/src/Control.Loading.css!'
 
 import 'bootstrap/css/bootstrap.css!'
-//import topojson from 'topojson'
 
 import * as dom from './dom.js'
 import './css/style.css!'
@@ -16,8 +15,8 @@ import TEMPLATE_INDEX from './templates/index.js'
 dom.add(TEMPLATE_INDEX, document.body)
 
 let map = L.map('map', {
-  center: [50, 20],
-  zoom: 4
+  center: [52, 10],
+  zoom: 5
 })
 
 L.control.scale().addTo(map)
@@ -45,13 +44,13 @@ fetch('app/data/clusters.geojson')
         weight: 1,
         opacity: 1,
         fillOpacity: 1,
-        fillColor: CLUSTER_COLOURS[parseInt(feature.properties.Couleur)] || CLUSTER_COLOURS[99],
+        fillColor: CLUSTER_COLOURS[parseInt(feature.properties.color_idx)] || CLUSTER_COLOURS[99],
       }),
       onEachFeature: (feature, layer) => {
         L.marker(layer.getBounds().getCenter(), {
           icon: L.divIcon({
             className: 'cluster-label',
-            html: feature.properties.Clusters_c
+            html: feature.properties.cluster_code
           })
         }).addTo(map)
       }
@@ -82,18 +81,3 @@ fetch('app/data/countries.geojson')
     // setting zindex is not supported for vector layers
     layer.bringToFront()
 })
-
-/*
-fetch('app/data/world-110m.topojson')
-  .then(response => response.json())
-  .then(o => {
-    let layer = L.geoJson()
-    // has 'countries' and 'land' collections in o.objects
-    for (let i in o.objects) {
-      // FIXME leaflet complains "Invalid GeoJSON object"
-      let ft = topojson.feature(o, o.objects[i])
-      layer.addData(layer, ft)
-    }
-    layer.addTo(map)
-  })
-*/
