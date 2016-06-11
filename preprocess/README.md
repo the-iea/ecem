@@ -11,7 +11,7 @@ http://conda.pydata.org/miniconda.html
 ## Step 2: Create Python environment
 
 ```sh
-$ conda install -c https://conda.anaconda.org/conda-forge gdal=1.*
+$ conda create -n ecem -c https://conda.anaconda.org/conda-forge gdal=1.* python=3.*
 $ activate ecem
 ``` 
 
