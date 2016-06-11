@@ -13,20 +13,18 @@ def load_json(path):
 
 def save_json(obj, path, **kw):
   with open(path, 'w') as fp:
-    jsonstr = json.dumps(obj, fp, cls=NoIndentEncoder, **kw)
+    jsonstr = json.dumps(obj, fp, cls=CustomEncoder, **kw)
     fp.write(jsonstr)
     
 def save_covjson(obj, path):
   # skip indentation of certain fields to make it more compact but still human readable
   for axis in obj['domain']['axes'].values():
-    no_indent(axis, 'values')
+    compact(axis, 'values')
   for ref in obj['domain']['referencing']:
-    if 'identifiers' in ref['system']:
-      identifiers = ref['system']['identifiers']
-      for k in identifiers:
-        no_indent(identifiers[k], 'label')
-  range = obj['ranges']['TEMP']
-  no_indent(range, 'axisNames', 'shape', 'values')
+    no_indent(ref, 'components')
+  for range in obj['ranges'].values():
+    no_indent(range, 'axisNames', 'shape')
+    compact(range, 'values')
   save_json(obj, path, indent=2)
 
 def minify_json (path):
@@ -35,32 +33,35 @@ def minify_json (path):
   with open(path, 'w') as fp:
     json.dump(json.loads(jsonstr), fp, separators=(',', ':'))
 
+def compact(obj, *names):
+  for name in names:
+    obj[name] = Custom(obj[name], separators=(',', ':'))
+
 def no_indent(obj, *names):
   for name in names:
-    obj[name] = NoIndent(obj[name])
+    obj[name] = Custom(obj[name])
 
-# http://stackoverflow.com/a/25935321  
-class NoIndent(object):
-    def __init__(self, value):
+# adapted from http://stackoverflow.com/a/25935321  
+class Custom(object):
+    def __init__(self, value, **custom_args):
         self.value = value
+        self.custom_args = custom_args
 
-class NoIndentEncoder(json.JSONEncoder):
+class CustomEncoder(json.JSONEncoder):
     def __init__(self, *args, **kwargs):
-        super(NoIndentEncoder, self).__init__(*args, **kwargs)
-        self.kwargs = dict(kwargs)
-        del self.kwargs['indent']
+        super(CustomEncoder, self).__init__(*args, **kwargs)
         self._replacement_map = {}
 
     def default(self, o):
-        if isinstance(o, NoIndent):
+        if isinstance(o, Custom):
             key = uuid.uuid4().hex
-            self._replacement_map[key] = json.dumps(o.value, **self.kwargs)
+            self._replacement_map[key] = json.dumps(o.value, **o.custom_args)
             return "@@%s@@" % (key,)
         else:
-            return super(NoIndentEncoder, self).default(o)
+            return super(CustomEncoder, self).default(o)
 
     def encode(self, o):
-        result = super(NoIndentEncoder, self).encode(o)
+        result = super(CustomEncoder, self).encode(o)
         for k, v in self._replacement_map.items():
             result = result.replace('"@@%s@@"' % (k,), v)
         return result
