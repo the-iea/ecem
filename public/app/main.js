@@ -1,4 +1,4 @@
-import 'core-js/es6/promise.js'
+import 'core-js/es6'
 import 'fetch'
 
 import L from 'leaflet'
@@ -68,19 +68,25 @@ function loadClusterLayer () {
       }).on('add', () => {
         // setting zindex is not supported for vector layers
         layer.bringToBack()
-        
-        layer.markers.forEach(l => l.addTo(layer._map))
-      }).on('remove', () => {
-        layer.markers.forEach(l => layer._map.removeLayer(l))
       })
       
-      layer.markers = layer.getLayers().map(featureLayer => 
-        L.marker(featureLayer.getBounds().getCenter(), {
-          icon: L.divIcon({
-            className: 'polygon-label',
-            html: featureLayer.feature.properties.cluster_code
+      let markers      
+      layer.on('add', () => {
+        if (!markers) {
+          // getCenter() can only be called after the layers have been added to the map
+          markers = layer.getLayers().map(featureLayer => { 
+            return L.marker(featureLayer.getCenter(), {
+              icon: L.divIcon({
+                className: 'polygon-label',
+                html: featureLayer.feature.properties.cluster_code
+              })
+            })
           })
-        }))
+        }
+        markers.forEach(l => l.addTo(layer._map))
+      }).on('remove', () => {
+        markers.forEach(l => l.remove())
+      })
       
       return layer
   })
@@ -99,22 +105,28 @@ function loadCountryLayer () {
           fillOpacity: 1,
           fillColor: 'lightblue'
         })
-      }).on('add showmarkers', () => {
+      }).on('add', () => {
         // setting zindex is not supported for vector layers
         layer.bringToFront()
-        
-        layer.markers.forEach(l => l.addTo(layer._map))
-      }).on('remove hidemarkers', () => {
-        layer.markers.forEach(l => layer._map.removeLayer(l))
       })
-      
-      layer.markers = layer.getLayers().map(featureLayer => 
-        L.marker(featureLayer.getBounds().getCenter(), {
-          icon: L.divIcon({
-            className: 'polygon-label',
-            html: featureLayer.feature.properties.country_code
+
+      let markers      
+      layer.on('add showmarkers', () => {
+        if (!markers) {
+          // getCenter() can only be called after the layers have been added to the map
+          markers = layer.getLayers().map(featureLayer => { 
+            return L.marker(featureLayer.getCenter(), {
+              icon: L.divIcon({
+                className: 'polygon-label',
+                html: featureLayer.feature.properties.country_code
+              })
+            })
           })
-        }))
+        }
+        markers.forEach(l => l.addTo(layer._map))
+      }).on('remove hidemarkers', () => {
+        markers.forEach(l => l.remove())
+      })
       
       return layer
   })
