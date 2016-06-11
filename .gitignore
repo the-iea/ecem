@@ -6,3 +6,4 @@
 /.tern-project
 /preprocess/generated/
 __pycache__
+/.pydevproject

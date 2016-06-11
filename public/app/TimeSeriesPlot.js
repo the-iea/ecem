@@ -2,6 +2,7 @@
 
 import L from 'leaflet'
 import c3 from 'c3'
+import './c3CullingMax.js'
 
 import * as i18n from 'covutils/lib/i18n.js'
 
@@ -193,6 +194,9 @@ export default class TimeSeriesPlot extends L.Popup {
     let xs = {}
     let columns = []
     let names = {}
+    
+    let tMin = Infinity
+    let tMax = -Infinity
         
     for (let i=0; i < this._covs.length; i++) {
       let paramKey = covsWithParamKey[i][1]
@@ -219,6 +223,8 @@ export default class TimeSeriesPlot extends L.Popup {
         let t = new Date(tVals[j])
         x.push(t)
         y.push(val)
+        tMin = Math.min(tMin, t.getTime())
+        tMax = Math.max(tMax, t.getTime())
       }
       
       columns.push(x)
@@ -227,7 +233,7 @@ export default class TimeSeriesPlot extends L.Popup {
     
     
     let el = document.createElement('div')
-    c3.generate({
+    var chart = c3.generate({
       bindto: el,
       data: {
         xs,
@@ -274,7 +280,15 @@ export default class TimeSeriesPlot extends L.Popup {
       },
       zoom: {
         enabled: true,
-        rescale: true
+        rescale: true,
+        onzoomend: domain => {
+          let cullingMaxFoV = 10 // same as default value if unzoomed
+          let totalTime = tMax - tMin
+          let zoomTime = domain[1] - domain[0]
+          let totalLabels = Math.round((totalTime * cullingMaxFoV) / zoomTime)
+          // FIXME zoom-out doesn't work if this is called
+          chart.axis.cullingMax(totalLabels)
+        }
       },
       size: {
         height: 300,

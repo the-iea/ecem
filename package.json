@@ -20,6 +20,7 @@
       "bootstrap": "github:twbs/bootstrap@^3.3.5",
       "bootstrap-native": "npm:bootstrap.native@^1.0.1",
       "c3": "npm:c3@^0.4.11",
+      "core-js": "npm:core-js@^1.1.4",
       "covjson-reader": "npm:covjson-reader@^0.12.1",
       "covutils": "npm:covutils@^0.2.6",
       "css": "github:systemjs/plugin-css@^0.1.13",
