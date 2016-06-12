@@ -1,8 +1,8 @@
 # ECEM Demonstrator
 
-This is a work-in-progress.
+This repository hosts the source code of the [ECEM demonstrator](https://the-iea.github.io/ecem) that is currently being developed as part of the [European Climatic Energy Mixes (ECEM) project](http://climate.copernicus.eu/ecem-european-climatic-energy-mixes).
 
-https://the-iea.github.io/ecem
+Latest version: https://the-iea.github.io/ecem
 
 ## Development setup
 
