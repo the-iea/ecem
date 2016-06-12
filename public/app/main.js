@@ -40,11 +40,12 @@ class ClusterModeControl extends L.Control {
   }
   
   onAdd () {
-    let el = dom.HTMLone('<button>Show Clusters</button>')
+    let html = cl => '<span class="glyphicon glyphicon-eye-' + (cl ? 'close' : 'open') + '"></span> ' + (cl ? 'Hide' : 'Show') + ' Clusters'
+    let el = dom.HTMLone('<button class="btn btn-default btn-lg">' + html(this.clusters) + '</button>')
     L.DomEvent.disableClickPropagation(el)
     el.addEventListener('click', () => {
       this.clusters = !this.clusters
-      el.innerHTML = (this.clusters ? 'Hide' : 'Show') + ' Clusters'
+      el.innerHTML = html(this.clusters)
       this.fire('change', {clusters: this.clusters})
     })    
     return el
@@ -60,7 +61,7 @@ function loadClusterLayer () {
       let layer = L.geoJson(clusters, {
         style: feature => ({
           color: 'black',
-          weight: 1,
+          weight: 0.5,
           opacity: 1,
           fillOpacity: 1,
           fillColor: CLUSTER_COLOURS[parseInt(feature.properties.color_idx)] || CLUSTER_COLOURS[99]
@@ -74,14 +75,15 @@ function loadClusterLayer () {
       layer.on('add', () => {
         if (!markers) {
           // getCenter() can only be called after the layers have been added to the map
-          markers = layer.getLayers().map(featureLayer => { 
-            return L.marker(featureLayer.getCenter(), {
+          markers = layer.getLayers().map(featureLayer => 
+            L.marker(featureLayer.getCenter(), {
+              interactive: false,
               icon: L.divIcon({
                 className: 'polygon-label',
-                html: featureLayer.feature.properties.cluster_code
+                html: '<h5><span class="label label-default">' + featureLayer.feature.properties.cluster_code + '</span></h5>'
               })
             })
-          })
+          )
         }
         markers.forEach(l => l.addTo(layer._map))
       }).on('remove', () => {
@@ -99,7 +101,7 @@ function loadCountryLayer () {
       let layer = L.geoJson(countries, {
         style: feature => ({
           color: 'black',
-          weight: 3,
+          weight: 2,
           opacity: 1,
           fill: true,
           fillOpacity: 1,
@@ -114,11 +116,15 @@ function loadCountryLayer () {
       layer.on('add showmarkers', () => {
         if (!markers) {
           // getCenter() can only be called after the layers have been added to the map
-          markers = layer.getLayers().map(featureLayer => { 
-            return L.marker(featureLayer.getCenter(), {
+          markers = layer.getLayers().map(featureLayer => {
+            let code = featureLayer.feature.properties.country_code
+            // AT has weird centroid position, use bbox center instead
+            let pos = code === 'AT' ? featureLayer.getBounds().getCenter() : featureLayer.getCenter()
+            return L.marker(pos, {
+              interactive: false,
               icon: L.divIcon({
                 className: 'polygon-label',
-                html: featureLayer.feature.properties.country_code
+                html: '<h5><span class="label label-default">' + code + '</span></h5>'
               })
             })
           })
@@ -139,6 +145,10 @@ class App {
       zoom: 5
     })
     this.map = map
+    
+    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: 'Map data &copy; <a href="http://www.osm.org">OpenStreetMap</a>'
+    }).addTo(map)
         
     L.control.scale().addTo(map)
     
@@ -157,7 +167,7 @@ class App {
         .on('click', e => {
           let country_code = e.layer.feature.properties.country_code
           
-          this.showCountryTestPlot(country_code, e.latlng)
+          this.showCountryTestPlot(country_code, e.layer.getCenter())
         }).addTo(map)
     })
     this.clusterModeControl = new ClusterModeControl()

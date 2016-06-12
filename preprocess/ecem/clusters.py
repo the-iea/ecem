@@ -63,7 +63,7 @@ def get_clusters():
 def create_country_geojson():
   # FIXME German clusters can't be merged properly as there are sliver polygons, which means that some inner boundaries remain!
   # problem description and solution: http://gis.stackexchange.com/a/71729
-  # -> how to do that in Python??
+  # tried that in GRASS but got a crash: https://trac.osgeo.org/grass/ticket/3061
   
   inDriver = ogr.GetDriverByName(ESRI_SHP)
   inDataSource = inDriver.Open(PATH_CLUSTERSHP)
@@ -107,6 +107,10 @@ def create_country_geojson():
   minify_json(outGeoJSON)
 
 def create_cluster_geojson():
+  '''
+  Definition of clusters:
+  http://www.e-highway2050.eu/fileadmin/documents/Results/D2_2_European_cluster_model_of_the_Pan-European_transmission_grid_20072015.pdf
+  '''
   inDriver = ogr.GetDriverByName(ESRI_SHP)
   inDataSource = inDriver.Open(PATH_CLUSTERSHP)
   inLayer = inDataSource.GetLayer()

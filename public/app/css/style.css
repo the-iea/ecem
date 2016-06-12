@@ -1,35 +1,49 @@
 html, body { 
+	width: 100%;
 	height: 100%;
 	margin: 0;
-}
-
-#map {
-	height: 100%;
-}
-
-#ecem-banner {
-  z-index: 1500;
-  position: absolute;
-  width: 100%;
-  top: 0;
-  margin: 0 auto;
-  text-align: center;
-  pointer-events: none;
+	padding: 0;
 }
 
 .ecem {
-	background-color: #97283B;
+  background-color: #97283B;
+}
+
+#container {
+	height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#ecem-banner div {
+	max-width: 800px;
+  margin: 0 auto;
+}
+
+#ecem-banner img {
+	max-width: 100%;
+  pointer-events: none;
+}
+
+#map {
+  flex-grow: 1;
 }
 
 .leaflet-container {
   background: none;
 }
 
+/* remove leaflet's default sizes */
 .polygon-label {
-	color: black;
-	background-color: white;
+	margin: 0 !important;
 	width: initial !important;
 	height: initial !important;
+}
+
+/* make label appear centered at given coordinates */
+.polygon-label h5 {
+	margin: 0;
+	transform: translate(-50%, -50%);
 }
 
 .c3-tooltip-container {
