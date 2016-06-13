@@ -1,0 +1,59 @@
+{
+  "type" : "Coverage",
+  "domain" : {
+    "type": "Domain",
+    "axes": {
+      "cluster": { "values": [] },
+      "t": { "values": [] }
+    },
+    "referencing": [{
+      "components": ["cluster"],
+      "system": {
+        "type": "IdentifierRS",
+        "label": { "en": "e-Highway2050 Cluster Codes" },
+        "targetConcept": {
+          "label": {"en": "e-Highway2050 Cluster"}
+        },
+        "identifiers": {}
+      }
+    }, {
+      "components": ["t"],
+      "system": {
+        "type": "TemporalRS",
+        "calendar": "Gregorian"
+      }
+    }]
+  },
+  "parameters" : {
+    "TEMP": {
+      "type" : "Parameter",
+      "description" : {
+        "en": "The air temperature measured in degrees Celsius."
+      },
+      "unit" : {
+        "label": {
+          "en": "Degree Celsius"
+        },
+        "symbol": {
+          "value": "Cel",
+          "type": "http://www.opengis.net/def/uom/UCUM/"
+        }
+      },
+      "observedProperty" : {
+        "id" : "http://vocab.nerc.ac.uk/standard_name/air_temperature/",
+        "label" : {
+          "en": "Air temperature"
+        }
+      }
+    }
+  },
+  "ranges" : {
+    "TEMP" : {
+      "type" : "NdArray",
+      "dataType": "float",
+      "axisNames": ["t", "cluster"],
+      "shape": [ ],
+      "values" : [ ]
+    }
+  }
+}

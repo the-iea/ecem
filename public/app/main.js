@@ -154,12 +154,13 @@ class App {
     
     this.data = {}
     this.data.ERA_Tmean_countries = CovJSON.read('app/data/ERA_Tmean_countries_sample.covjson')
+    this.data.ERA_Tmean_cluster = CovJSON.read('app/data/ERA_Tmean_cluster_sample.covjson')
     
     loadClusterLayer().then(layer => {
       this.clusterLayer = layer
         .on('click', e => {
           let cluster_code = e.layer.feature.properties.cluster_code
-          // do something...
+          this.showClusterTestPlot(cluster_code, e.layer.getCenter())
         })
     })
     loadCountryLayer().then(layer => {
@@ -187,6 +188,19 @@ class App {
   showCountryTestPlot (country_code, latlng) {
     this.data.ERA_Tmean_countries
       .then(cov => cov.subsetByValue({country: country_code}))
+      .then(cov => {
+        new TimeSeriesPlot(cov, {
+          className: 'timeseries-popup',
+          maxWidth: 600,
+          timeFormat: '%Y-%m'
+        }).setLatLng(latlng)
+          .addTo(this.map)
+      })
+  }
+  
+  showClusterTestPlot (cluster_code, latlng) {
+    this.data.ERA_Tmean_cluster
+      .then(cov => cov.subsetByValue({cluster: cluster_code}))
       .then(cov => {
         new TimeSeriesPlot(cov, {
           className: 'timeseries-popup',
