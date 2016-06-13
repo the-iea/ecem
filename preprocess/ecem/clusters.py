@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import OrderedDict
 import os
 import shutil
 from functools import reduce
@@ -41,20 +41,23 @@ WGS84 = osr.SpatialReference()
 WGS84.ImportFromProj4('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
 
 def get_clusters_by_country():
-  country_clusters = defaultdict(list)
-  with open(PATH_CLUSTERNAMES, newline='') as csvfile:
-    rows = csv.reader(csvfile)
-    next(rows) # skip first line
-    for row in rows:
-      country_code = row[0]
-      cluster_code = row[2]
-      country_clusters[country_code].append(cluster_code)
-  assert len(country_clusters) == len(countries), 'Mismatch in length between countries in countrynames and cluster_names files!'
-  return country_clusters
+    # we use an ordered dict to have consistent ordering when generating files based on this dict
+    country_clusters = OrderedDict()
+    with open(PATH_CLUSTERNAMES, newline='') as csvfile:
+        rows = csv.reader(csvfile)
+        next(rows) # skip first line
+        for row in rows:
+            country_code = row[0]
+            cluster_code = row[2]
+            if country_code not in country_clusters:
+                country_clusters[country_code] = []
+            country_clusters[country_code].append(cluster_code)
+    assert len(country_clusters) == len(countries), 'Mismatch in length between countries in countrynames and cluster_names files!'
+    return country_clusters
 
 def get_clusters():
   country_clusters = get_clusters_by_country()
-  clusters = {}
+  clusters = OrderedDict()
   for country_code, cluster_codes in country_clusters.items():
     for cluster_code in cluster_codes:
       clusters[cluster_code] = country_code
