@@ -28,7 +28,7 @@
     "TEMP": {
       "type" : "Parameter",
       "description" : {
-        "en": "The air temperature measured in degrees Celsius."
+        "en": "The air temperature at 2m measured in degrees Celsius."
       },
       "unit" : {
         "label": {
