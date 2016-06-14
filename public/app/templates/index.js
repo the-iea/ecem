@@ -33,7 +33,7 @@ export default `
             <a href="http://jspm.io/">jspm</a>,
             <a href="https://github.com/systemjs/systemjs">SystemJS</a>,
             <a href="https://github.com/systemjs/plugin-css">systemjs/plugin-css</a>
-            <a href="https://github.com/Aaike/jspm-less-plugin">jspm-less-plugin</a>,
+            <a href="https://github.com/HuasoFoundries/systemjs-less-plugin">systemjs-less-plugin</a>,
             <a href="https://babeljs.io/">Babel</a>,
             <a href="https://github.com/jakubpawlowicz/clean-css">clean-css</a>            
           </p>
