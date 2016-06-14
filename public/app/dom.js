@@ -14,6 +14,9 @@ export function add (nodes, el) {
   if (typeof nodes === 'string') {
     nodes = HTML(nodes)
   }
+  if (!Array.isArray(nodes)) {
+    nodes = [nodes]
+  }
   nodes.forEach(node => el.appendChild(node))
 }
 

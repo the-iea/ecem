@@ -26,8 +26,12 @@ System.config({
     "fetch": "github:github/fetch@0.10.1",
     "leaflet": "github:Leaflet/Leaflet@1.0.0-rc.1",
     "leaflet-loading": "github:ebrelsford/Leaflet.loading@0.1.20",
+    "less": "github:aaike/jspm-less-plugin@0.0.5",
     "traceur": "github:jmcriffey/bower-traceur@0.0.93",
     "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.93",
+    "github:aaike/jspm-less-plugin@0.0.5": {
+      "less.js": "github:distros/less@2.4.0"
+    },
     "github:jspm/nodelibs-assert@0.1.0": {
       "assert": "npm:assert@1.4.1"
     },

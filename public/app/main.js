@@ -8,15 +8,24 @@ import 'leaflet-loading/src/Control.Loading.css!'
 
 import 'bootstrap/css/bootstrap.css!'
 
+import Modal from 'bootstrap-native/lib/modal-native.js'
+import Dropdown from 'bootstrap-native/lib/dropdown-native.js'
+
 import * as CovJSON from 'covjson-reader'
 
 import 'c3/c3.css!'
 import TimeSeriesPlot from './TimeSeriesPlot.js'
-import * as dom from './dom.js'
-import './css/style.css!'
+import {add, $$, HTMLone} from './dom.js'
+import './css/style.less!'
+
+import TEMPLATE_TIMEPERIODCONTROL from './templates/control.TimePeriod.js'
+import './css/control.TimePeriod.css!'
+
+import TEMPLATE_HELPCONTROL from './templates/control.Help.js'
+import './css/control.Help.css!'
 
 import TEMPLATE_INDEX from './templates/index.js'
-dom.add(TEMPLATE_INDEX, document.body)
+add(TEMPLATE_INDEX, document.body)
 
 const CLUSTER_COLOURS = {
   0: '#d7191c',
@@ -32,6 +41,23 @@ const CLUSTER_COLOURS = {
   99: '#2b83ba'
 }
  
+class InfoSignControl extends L.Control {
+  constructor (options={}) {
+    super(options.position ? {position: options.position} : {position: 'bottomright'})
+  }
+  
+  onAdd () {
+    let el = HTMLone('<div class="info-sign-control"><a href="#"><span class="glyphicon glyphicon-info-sign text-muted"></span></a></div>')
+    L.DomEvent.disableClickPropagation(el)
+    $$('a', el).addEventListener('click', e => {
+      L.DomEvent.preventDefault(e)
+      this.fire('click')
+    })
+    return el
+  }   
+}
+InfoSignControl.include(L.Mixin.Events)
+
 class ClusterModeControl extends L.Control {
   constructor (options={}) {
     super(options.position ? {position: options.position} : {position: 'bottomleft'})
@@ -40,8 +66,8 @@ class ClusterModeControl extends L.Control {
   }
   
   onAdd () {
-    let html = cl => '<span class="glyphicon glyphicon-eye-' + (cl ? 'close' : 'open') + '"></span> ' + (cl ? 'Hide' : 'Show') + ' Clusters'
-    let el = dom.HTMLone('<button class="btn btn-default btn-lg">' + html(this.clusters) + '</button>')
+    let html = cl => (cl ? 'Hide' : 'Show') + ' Clusters'
+    let el = HTMLone('<button class="btn btn-ecem">' + html(this.clusters) + '</button>')
     L.DomEvent.disableClickPropagation(el)
     el.addEventListener('click', () => {
       this.clusters = !this.clusters
@@ -53,6 +79,46 @@ class ClusterModeControl extends L.Control {
     
 }
 ClusterModeControl.include(L.Mixin.Events)
+
+class TimePeriodControl extends L.Control {
+  constructor (options={}) {
+    super(options.position ? {position: options.position} : {position: 'topleft'})
+  }
+  
+  onAdd () {
+    let el = HTMLone(TEMPLATE_TIMEPERIODCONTROL)
+    L.DomEvent.disableClickPropagation(el)
+    for (let name of ['historic', 'seasonal-forecasts', 'climate-projections']) {
+      $$('.btn-timeperiod-' + name, el).addEventListener('click', () => {
+        this.fire('change', {mode: name})
+      })
+    }
+    return el
+  }   
+}
+TimePeriodControl.include(L.Mixin.Events)
+
+/**
+ * Not a real leaflet control, but rather has to be added to the #map element.
+ */
+class HelpControl extends L.Class { 
+  createElement () {
+    let el = HTMLone(TEMPLATE_HELPCONTROL)
+    L.DomEvent.disableClickPropagation(el)
+    
+    new Dropdown($$('.help-dropdown .dropdown-toggle', el))
+    
+    for (let name of ['usage', 'methods', 'results', 'casestudies']) {
+      for (let menuEl of [$$('.btn-help-' + name, el), $$('.dropdown-help-' + name, el)]) {
+        menuEl.addEventListener('click', () => {
+          this.fire('click', {name})
+        })
+      }
+    }
+    return el
+  }
+}
+HelpControl.include(L.Mixin.Events)
 
 function loadClusterLayer () {
   return fetch('app/data/clusters.geojson')
@@ -142,15 +208,32 @@ class App {
   constructor () {
     let map = L.map('map', {
       center: [52, 10],
-      zoom: 5
+      zoom: 5,
+      attributionControl: false
     })
     this.map = map
     
-    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: 'Map data &copy; <a href="http://www.osm.org">OpenStreetMap</a>'
-    }).addTo(map)
+    map.zoomControl.setPosition('topright')
+    
+    new InfoSignControl()
+      .on('click', () => {
+        new Modal($$('#infoModal')).open()
+      }).addTo(map)   
+    
+    new TimePeriodControl()
+      .on('click', e => {
+        console.log(e.mode)
+      }).addTo(map)
+      
+    let helpEl = new HelpControl()
+      .on('click', e => {
+        console.log(e.name)
+      }).createElement()
+    add(helpEl, $$('#map'))
         
-    L.control.scale().addTo(map)
+    //L.control.scale().addTo(map)
+    
+    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map)
     
     this.data = {}
     this.data.ERA_Tmean_countries = CovJSON.read('app/data/ERA_Tmean_countries_sample.covjson')

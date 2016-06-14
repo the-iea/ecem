@@ -1,0 +1,10 @@
+.timeperiod-control .btn-group-vertical {
+  width: 100%;
+}
+.timeperiod-control .panel-heading {
+	padding: 5px;
+}
+.timeperiod-control .panel-heading h5 {
+	margin: 0;
+	font-weight: bold;
+}

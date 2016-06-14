@@ -1,0 +1,38 @@
+.help-container {
+  align-self: flex-end;
+  margin-bottom: 10px;
+  z-index: 1000;
+}
+.help-container .help-control {
+	padding: 7px;
+	margin-bottom: 0;
+}
+
+.help-container .help-control button:not(:last-child) {
+	margin-right: 7px;
+}
+
+/* match the height of the other two-line buttons */
+.help-container .help-control .btn-help-casestudies {
+	height: 54px;
+}
+
+.help-container .help-dropdown {
+	display: none;
+}
+
+.help-container .help-dropdown .dropdown-menu {
+  left: 50%;
+  right: auto;
+  text-align: center;
+  transform: translate(-50%, 0);
+}
+
+@media screen and (max-width: 800px) {
+	.help-container .help-dropdown {
+	  display: block;
+	}
+	.help-container .help-control {
+	  display: none;
+	}
+}
