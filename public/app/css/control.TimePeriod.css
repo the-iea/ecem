@@ -1,3 +1,8 @@
+.timeperiod-control {
+	/* set explicit width to prevent resizing when making text bold */
+	width: 164px;
+}
+
 .timeperiod-control .btn-group-vertical {
   width: 100%;
 }

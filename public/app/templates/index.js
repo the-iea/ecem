@@ -46,5 +46,86 @@ export default `
       </div>
     </div>
   </div>
+  
+  <div class="modal fade" id="helpUsageModal" tabindex="-1" role="dialog" aria-labelledby="helpUsageModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="helpUsageModalLabel">Using the demonstrator</h4>
+        </div>
+        <div class="modal-body">
+          <p>
+            Just click around and see what happens...
+          </p>
+                 
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal fade" id="helpMethodsModal" tabindex="-1" role="dialog" aria-labelledby="helpMethodsModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="helpMethodsModalLabel">Methods &amp; assumptions</h4>
+        </div>
+        <div class="modal-body">
+          <p>
+            We assume the world is not flat.
+          </p>
+                 
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal fade" id="helpResultsModal" tabindex="-1" role="dialog" aria-labelledby="helpResultsModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="helpResultsModalLabel">Key messages &amp; pre-prepared graphics</h4>
+        </div>
+        <div class="modal-body">
+          <p>
+            Energy matters.
+          </p>
+                 
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal fade" id="helpCasestudiesModal" tabindex="-1" role="dialog" aria-labelledby="helpCasestudiesModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="helpCasestudiesModalLabel">Case studies</h4>
+        </div>
+        <div class="modal-body">
+          <p>
+            Energy matters.
+          </p>
+                 
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
 </div>
 `

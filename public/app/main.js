@@ -83,18 +83,33 @@ ClusterModeControl.include(L.Mixin.Events)
 class TimePeriodControl extends L.Control {
   constructor (options={}) {
     super(options.position ? {position: options.position} : {position: 'topleft'})
+    this.names = ['historic', 'seasonal-forecasts', 'climate-projections']
+    this.classPrefix = '.btn-timeperiod-'
   }
   
   onAdd () {
     let el = HTMLone(TEMPLATE_TIMEPERIODCONTROL)
     L.DomEvent.disableClickPropagation(el)
-    for (let name of ['historic', 'seasonal-forecasts', 'climate-projections']) {
-      $$('.btn-timeperiod-' + name, el).addEventListener('click', () => {
+    for (let name of this.names) {
+      $$(this.classPrefix + name, el).addEventListener('click', () => {
         this.fire('change', {mode: name})
+        this._setActive(name)
       })
     }
     return el
-  }   
+  }
+  
+  _setActive (nameToActivate) {
+    let c = this.getContainer()
+    let el = $$(this.classPrefix + nameToActivate, c)
+    el.style.fontWeight = 'bold'
+    L.DomUtil.addClass(el, 'active')
+    for (let name of this.names.filter(n => n !== nameToActivate)) {
+      let el = $$(this.classPrefix + name, c)
+      el.style.fontWeight = 'initial'
+      L.DomUtil.removeClass(el, 'active')
+    }
+  }
 }
 TimePeriodControl.include(L.Mixin.Events)
 
@@ -111,14 +126,14 @@ class HelpControl extends L.Class {
     for (let name of ['usage', 'methods', 'results', 'casestudies']) {
       for (let menuEl of [$$('.btn-help-' + name, el), $$('.dropdown-help-' + name, el)]) {
         menuEl.addEventListener('click', () => {
-          this.fire('click', {name})
+          let uc = name.charAt(0).toUpperCase() + name.slice(1)
+          new Modal($$('#help' + uc + 'Modal')).open()
         })
       }
     }
     return el
   }
 }
-HelpControl.include(L.Mixin.Events)
 
 function loadClusterLayer () {
   return fetch('app/data/clusters.geojson')
@@ -225,10 +240,7 @@ class App {
         console.log(e.mode)
       }).addTo(map)
       
-    let helpEl = new HelpControl()
-      .on('click', e => {
-        console.log(e.name)
-      }).createElement()
+    let helpEl = new HelpControl().createElement()
     add(helpEl, $$('#map'))
         
     //L.control.scale().addTo(map)

@@ -215,7 +215,6 @@ export default class TimeSeriesPlot extends L.Popup {
         name: this._labels[i] ? this._labels[i] : obsPropLabel,
         data
       })
-      console.log(series)
     }
     
     
