@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "ECEM Demonstrator",
+  "description": "ECEM Demonstrator",
   "contributors": [
     "Maik Riechert <maik.riechert@arcor.de>"
   ],
