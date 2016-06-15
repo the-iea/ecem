@@ -1,0 +1,16 @@
+.buttongroup-control .btn-group-vertical {
+  width: 100%;
+}
+.buttongroup-control .panel-heading {
+  padding: 5px;
+}
+.buttongroup-control .panel-heading h5 {
+  margin: 0;
+  font-weight: bold;
+}
+
+.buttongroup-control {
+  /* set explicit width to prevent resizing when making text bold */
+  width: 164px;
+}
+

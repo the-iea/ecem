@@ -1,5 +1,5 @@
 export default
-`<div class="timeperiod-control panel panel-default">
+`<div class="timeperiod-control buttongroup-control panel panel-default">
   <div class="panel-heading text-center">
     <h5>Time Period</h5>
   </div>

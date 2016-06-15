@@ -13,18 +13,20 @@ import Dropdown from 'bootstrap-native/lib/dropdown-native.js'
 
 import * as CovJSON from 'covjson-reader'
 
-import 'c3/c3.css!'
+import EventMixin from './EventMixin.js'
 import TimeSeriesPlot from './TimeSeriesPlotHighcharts.js'
 import {add, $$, HTMLone} from './dom.js'
+
+//import 'c3/c3.css!'
 import './css/style.less!'
-
-import TEMPLATE_TIMEPERIODCONTROL from './templates/control.TimePeriod.js'
-import './css/control.TimePeriod.css!'
-
-import TEMPLATE_HELPCONTROL from './templates/control.Help.js'
+import './css/control.ButtonGroup.css!'
 import './css/control.Help.css!'
 
+import TEMPLATE_VARIABLESCONTROL from './templates/control.Variables.js'
+import TEMPLATE_TIMEPERIODCONTROL from './templates/control.TimePeriod.js'
+import TEMPLATE_HELPCONTROL from './templates/control.Help.js'
 import TEMPLATE_INDEX from './templates/index.js'
+
 add(TEMPLATE_INDEX, document.body)
 
 const CLUSTER_COLOURS = {
@@ -41,7 +43,7 @@ const CLUSTER_COLOURS = {
   99: '#2b83ba'
 }
  
-class InfoSignControl extends L.Control {
+class InfoSignControl extends EventMixin(L.Control) {
   constructor (options={}) {
     super(options.position ? {position: options.position} : {position: 'bottomright'})
   }
@@ -56,9 +58,8 @@ class InfoSignControl extends L.Control {
     return el
   }   
 }
-InfoSignControl.include(L.Mixin.Events)
 
-class ClusterModeControl extends L.Control {
+class ClusterModeControl extends EventMixin(L.Control) {
   constructor (options={}) {
     super(options.position ? {position: options.position} : {position: 'bottomleft'})
     this.callback = options.callback
@@ -75,23 +76,25 @@ class ClusterModeControl extends L.Control {
       this.fire('change', {clusters: this.clusters})
     })    
     return el
-  }
-    
+  }   
 }
-ClusterModeControl.include(L.Mixin.Events)
 
-class TimePeriodControl extends L.Control {
+class ButtonGroupControl extends EventMixin(L.Control) {
   constructor (options={}) {
-    super(options.position ? {position: options.position} : {position: 'topleft'})
-    this.names = ['historic', 'seasonal-forecasts', 'climate-projections']
-    this.classPrefix = '.btn-timeperiod-'
+    options.position = options.position || 'topleft'
+    super(options)
+    this.on('add', () => {
+      if (this.options.initialActive) {
+        this._setActive(this.options.initialActive)
+      }
+    })
   }
   
   onAdd () {
-    let el = HTMLone(TEMPLATE_TIMEPERIODCONTROL)
+    let el = HTMLone(this.options.template)
     L.DomEvent.disableClickPropagation(el)
-    for (let name of this.names) {
-      $$(this.classPrefix + name, el).addEventListener('click', () => {
+    for (let name of this.options.names) {
+      $$(this.options.classPrefix + name, el).addEventListener('click', () => {
         this.fire('change', {mode: name})
         this._setActive(name)
       })
@@ -99,19 +102,44 @@ class TimePeriodControl extends L.Control {
     return el
   }
   
+  addTo (map) {
+    super.addTo(map)
+    this.fire('add')
+    return this
+  }
+  
   _setActive (nameToActivate) {
     let c = this.getContainer()
-    let el = $$(this.classPrefix + nameToActivate, c)
+    let el = $$(this.options.classPrefix + nameToActivate, c)
     el.style.fontWeight = 'bold'
     L.DomUtil.addClass(el, 'active')
-    for (let name of this.names.filter(n => n !== nameToActivate)) {
-      let el = $$(this.classPrefix + name, c)
+    for (let name of this.options.names.filter(n => n !== nameToActivate)) {
+      let el = $$(this.options.classPrefix + name, c)
       el.style.fontWeight = 'initial'
       L.DomUtil.removeClass(el, 'active')
     }
   }
 }
-TimePeriodControl.include(L.Mixin.Events)
+
+class TimePeriodControl extends ButtonGroupControl {
+  constructor (options={}) {
+    options.template = TEMPLATE_TIMEPERIODCONTROL
+    options.names = ['historic', 'seasonal-forecasts', 'climate-projections']
+    options.classPrefix = '.btn-timeperiod-'
+    options.position = options.position || 'topleft'
+    super(options)
+  }
+}
+
+class VariablesControl extends ButtonGroupControl {
+  constructor (options={}) {
+    options.template = TEMPLATE_VARIABLESCONTROL
+    options.names = ['energy', 'climate']
+    options.classPrefix = '.btn-variables-'
+    options.position = options.position || 'topleft'
+    super(options)
+  }
+}
 
 /**
  * Not a real leaflet control, but rather has to be added to the #map element.
@@ -228,6 +256,13 @@ class App {
     })
     this.map = map
     
+    // center popups
+    map.on('popupopen', function(e) {
+      var px = map.project(e.popup._latlng)
+      px.y -= e.popup._container.clientHeight/3.5
+      map.panTo(map.unproject(px),{animate: true})
+    })
+    
     map.zoomControl.setPosition('topright')
     
     new InfoSignControl()
@@ -235,7 +270,12 @@ class App {
         new Modal($$('#infoModal')).open()
       }).addTo(map)   
     
-    new TimePeriodControl()
+    new TimePeriodControl({initialActive: 'historic'})
+      .on('click', e => {
+        console.log(e.mode)
+      }).addTo(map)
+      
+    new VariablesControl({initialActive: 'climate'})
       .on('click', e => {
         console.log(e.mode)
       }).addTo(map)
