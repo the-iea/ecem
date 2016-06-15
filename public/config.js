@@ -24,6 +24,7 @@ System.config({
     "covutils": "npm:covutils@0.2.6",
     "css": "github:systemjs/plugin-css@0.1.22",
     "fetch": "github:github/fetch@0.10.1",
+    "highcharts": "github:highcharts/highcharts@4.2.5",
     "leaflet": "github:Leaflet/Leaflet@1.0.0-rc.1",
     "leaflet-loading": "github:ebrelsford/Leaflet.loading@0.1.20",
     "less": "npm:systemjs-less-plugin@1.8.1",

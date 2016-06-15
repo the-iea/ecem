@@ -27,7 +27,8 @@ export default `
             <a href="http://getbootstrap.com/">Bootstrap</a>,
             <a href="http://thednp.github.io/bootstrap.native/">bootstrap.native</a>,
             <a href="https://github.com/ebrelsford/Leaflet.loading">Leaflet.loading</a>,
-            <a href="http://c3js.org/">C3.js</a>,
+            <!--<a href="http://c3js.org/">C3.js</a>,-->
+            <a href="http://www.highcharts.com/">Highcharts</a>,
             <a href="https://github.com/zloirock/core-js">core-js</a>,
             <a href="https://github.com/github/fetch">github/fetch</a>
             <a href="http://jspm.io/">jspm</a>,

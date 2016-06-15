@@ -14,7 +14,7 @@ import Dropdown from 'bootstrap-native/lib/dropdown-native.js'
 import * as CovJSON from 'covjson-reader'
 
 import 'c3/c3.css!'
-import TimeSeriesPlot from './TimeSeriesPlot.js'
+import TimeSeriesPlot from './TimeSeriesPlotHighcharts.js'
 import {add, $$, HTMLone} from './dom.js'
 import './css/style.less!'
 
@@ -275,7 +275,7 @@ class App {
         new TimeSeriesPlot(cov, {
           className: 'timeseries-popup',
           maxWidth: 600,
-          timeFormat: '%Y-%m'
+          title: 'ERA Tmean for ' + country_code
         }).setLatLng(latlng)
           .addTo(this.map)
       })
@@ -288,7 +288,7 @@ class App {
         new TimeSeriesPlot(cov, {
           className: 'timeseries-popup',
           maxWidth: 600,
-          timeFormat: '%Y-%m'
+          title: 'ERA Tmean for ' + cluster_code
         }).setLatLng(latlng)
           .addTo(this.map)
       })
