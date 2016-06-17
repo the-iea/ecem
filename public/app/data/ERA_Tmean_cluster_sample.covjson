@@ -517,7 +517,7 @@
     ]
   },
   "parameters": {
-    "TEMP": {
+    "Tmean": {
       "type": "Parameter",
       "description": {
         "en": "The air temperature at 2m measured in degrees Celsius."
@@ -540,7 +540,7 @@
     }
   },
   "ranges": {
-    "TEMP": {
+    "Tmean": {
       "type": "NdArray",
       "dataType": "float",
       "axisNames": ["t", "cluster"],

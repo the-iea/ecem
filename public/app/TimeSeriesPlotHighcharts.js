@@ -77,11 +77,11 @@ export default class TimeSeriesPlot extends L.Popup {
     // 2D array of parameter key groups, where each inner array is ordered like the coverages array
     this._paramKeyGroups = keyGroups
     
-    // Map from coverage to param keys
-    this._paramKeys = new Map()
+    // list of param keys for each coverage
+    this._paramKeys = []
     for (let i=0; i < this._covs.length; i++) {
       let keys = this._paramKeyGroups.map(group => group[i]).filter(key => key)
-      this._paramKeys.set(this._covs[i], keys)
+      this._paramKeys.push(keys)
     }
   }
   
@@ -92,7 +92,7 @@ export default class TimeSeriesPlot extends L.Popup {
     super.onAdd(map)
     map.fire('dataloading')
     let domainPromise = Promise.all(this._covs.map(cov => cov.loadDomain()))
-    let rangePromise = Promise.all(this._covs.map(cov => cov.loadRanges(this._paramKeys.get(cov))))
+    let rangePromise = Promise.all(this._covs.map((cov,i) => cov.loadRanges(this._paramKeys[i])))
     Promise.all([domainPromise, rangePromise]).then(([domains, ranges]) => {
       this._domains = domains
       this._ranges = ranges

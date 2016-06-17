@@ -47,10 +47,64 @@
           "en": "Air temperature"
         }
       }
+    },
+    "Tmean05": {
+      "type" : "Parameter",
+      "description" : {
+        "en": "5th percentile of air temperature at 2m measured in degrees Celsius."
+      },
+      "unit" : {
+        "label": {
+          "en": "Degree Celsius"
+        },
+        "symbol": {
+          "value": "Cel",
+          "type": "http://www.opengis.net/def/uom/UCUM/"
+        }
+      },
+      "observedProperty" : {
+        "label" : {
+          "en": "5th percentile of air temperature"
+        }
+      }
+    },
+    "Tmean95": {
+      "type" : "Parameter",
+      "description" : {
+        "en": "95th percentile of air temperature at 2m measured in degrees Celsius."
+      },
+      "unit" : {
+        "label": {
+          "en": "Degree Celsius"
+        },
+        "symbol": {
+          "value": "Cel",
+          "type": "http://www.opengis.net/def/uom/UCUM/"
+        }
+      },
+      "observedProperty" : {
+        "label" : {
+          "en": "95th percentile of air temperature"
+        }
+      }
     }
   },
   "ranges" : {
     "Tmean" : {
+      "type" : "NdArray",
+      "dataType": "float",
+      "axisNames": ["t", "country"],
+      "shape": [ ],
+      "values" : [ ]
+    },
+    "Tmean05" : {
+      "type" : "NdArray",
+      "dataType": "float",
+      "axisNames": ["t", "country"],
+      "shape": [ ],
+      "values" : [ ]
+    },
+    "Tmean95" : {
       "type" : "NdArray",
       "dataType": "float",
       "axisNames": ["t", "country"],

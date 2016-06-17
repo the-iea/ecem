@@ -7,8 +7,8 @@
   "license": "UNLICENSED",
   "bugs": "https://github.com/the-iea/ecem/issues",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/the-iea/ecem.git"
+    "type": "git",
+    "url": "https://github.com/the-iea/ecem.git"
   },
   "scripts": {
     "serve": "http-server -p 8095 -c0",

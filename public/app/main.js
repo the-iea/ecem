@@ -95,8 +95,8 @@ class ButtonGroupControl extends EventMixin(L.Control) {
     L.DomEvent.disableClickPropagation(el)
     for (let name of this.options.names) {
       $$(this.options.classPrefix + name, el).addEventListener('click', () => {
-        this.fire('change', {mode: name})
         this._setActive(name)
+        this.fire('change', {mode: name})
       })
     }
     return el
@@ -109,6 +109,7 @@ class ButtonGroupControl extends EventMixin(L.Control) {
   }
   
   _setActive (nameToActivate) {
+    this.mode = nameToActivate
     let c = this.getContainer()
     let el = $$(this.options.classPrefix + nameToActivate, c)
     el.style.fontWeight = 'bold'
@@ -270,12 +271,12 @@ class App {
         new Modal($$('#infoModal')).open()
       }).addTo(map)   
     
-    new TimePeriodControl({initialActive: 'historic'})
+    let timePeriodControl = new TimePeriodControl({initialActive: 'historic'})
       .on('click', e => {
         console.log(e.mode)
       }).addTo(map)
       
-    new VariablesControl({initialActive: 'climate'})
+    let variablesControl = new VariablesControl({initialActive: 'climate'})
       .on('click', e => {
         console.log(e.mode)
       }).addTo(map)
@@ -290,6 +291,7 @@ class App {
     this.data = {}
     this.data.ERA_Tmean_countries = CovJSON.read('app/data/ERA_Tmean_countries_sample.covjson')
     this.data.ERA_Tmean_cluster = CovJSON.read('app/data/ERA_Tmean_cluster_sample.covjson')
+    this.data.GCM_Tmean_countries = CovJSON.read('app/data/GCM_Tmean_countries_sample.covjson')
     
     loadClusterLayer().then(layer => {
       this.clusterLayer = layer
@@ -303,7 +305,13 @@ class App {
         .on('click', e => {
           let country_code = e.layer.feature.properties.country_code
           
-          this.showCountryTestPlot(country_code, e.layer.getCenter())
+          if (timePeriodControl.mode === 'historic') {
+            this.showCountryTestPlot(country_code, e.layer.getCenter())
+          } else if (timePeriodControl.mode === 'climate-projections') {
+            this.showCountryEnsembleTestPlot(country_code, e.layer.getCenter())
+          } else {
+            // not implemented
+          }
         }).addTo(map)
     })
     this.clusterModeControl = new ClusterModeControl()
@@ -328,6 +336,21 @@ class App {
           className: 'timeseries-popup',
           maxWidth: 600,
           title: 'ERA Tmean for ' + country_code
+        }).setLatLng(latlng)
+          .addTo(this.map)
+      })
+  }
+  
+  showCountryEnsembleTestPlot (country_code, latlng) {
+    this.data.GCM_Tmean_countries
+      .then(cov => cov.subsetByValue({country: country_code, t: {start: '1979', stop: '20000'}})) // TODO allow optional start/stop
+      .then(cov => {
+        new TimeSeriesPlot([cov, cov, cov], {
+          keys: [['Tmean','Tmean05','Tmean95']],
+          labels: ['Tmean', '5th percentile', '95th percentile'],
+          className: 'timeseries-popup',
+          maxWidth: 600,
+          title: 'GCM Tmean ensemble for ' + country_code
         }).setLatLng(latlng)
           .addTo(this.map)
       })
