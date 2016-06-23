@@ -1,6 +1,6 @@
 export default
 `<div class="help-container">
-  <div class="help-control ecem panel">
+  <div class="panel help-control ecem">
     <button type="button" class="btn btn-default btn-help-usage">Using the <br> demonstrator</button>
     <button type="button" class="btn btn-default btn-help-methods">Methods &amp; <br> assumptions</button>
     <button type="button" class="btn btn-default btn-help-results">Key messages &amp; <br> pre-prepared graphics</button>

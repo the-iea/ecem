@@ -23,8 +23,9 @@ System.config({
     "covjson-reader": "npm:covjson-reader@0.12.1",
     "covutils": "npm:covutils@0.2.6",
     "css": "github:systemjs/plugin-css@0.1.22",
+    "download": "npm:downloadjs@1.4.4",
     "fetch": "github:github/fetch@0.10.1",
-    "highcharts": "github:highcharts/highcharts@4.2.5",
+    "highcharts": "npm:highcharts@4.2.5",
     "leaflet": "github:Leaflet/Leaflet@1.0.0-rc.1",
     "leaflet-loading": "github:ebrelsford/Leaflet.loading@0.1.20",
     "less": "npm:systemjs-less-plugin@1.8.1",
@@ -179,6 +180,9 @@ System.config({
       "fs": "github:jspm/nodelibs-fs@0.1.2",
       "path": "github:jspm/nodelibs-path@0.1.0"
     },
+    "npm:downloadjs@1.4.4": {
+      "process": "github:jspm/nodelibs-process@0.1.2"
+    },
     "npm:duplexer2@0.0.2": {
       "readable-stream": "npm:readable-stream@1.1.14"
     },
@@ -221,6 +225,9 @@ System.config({
     },
     "npm:has@1.0.1": {
       "function-bind": "npm:function-bind@1.1.0"
+    },
+    "npm:highcharts@4.2.5": {
+      "process": "github:jspm/nodelibs-process@0.1.2"
     },
     "npm:https-browserify@0.0.0": {
       "http": "github:jspm/nodelibs-http@1.7.1"

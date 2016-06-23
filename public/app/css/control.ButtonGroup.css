@@ -12,5 +12,6 @@
 .buttongroup-control {
   /* set explicit width to prevent resizing when making text bold */
   width: 164px;
+  margin-bottom: 0 !important;
 }
 

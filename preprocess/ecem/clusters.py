@@ -3,6 +3,8 @@ import os
 import shutil
 from functools import reduce
 import csv
+import json
+from string import Template
 from osgeo import ogr, osr
 ogr.UseExceptions()
 osr.UseExceptions()
@@ -24,14 +26,17 @@ GEOJSON_COUNTRY_CODE = 'country_code'
 GEOJSON_COLOR_IDX = 'color_idx'
 
 # Input files
+PATH_OBJ_JS_TEMPLATE = os.path.join(PATH_DATA, 'obj.js_template')
 PATH_CLUSTERNAMES = os.path.join(PATH_DATA, 'ECEM_cluster_names.csv')
 PATH_CLUSTERSHP = os.path.join(PATH_DATA, 'cluster_borders', 'Clusters_Borders.shp')
 
 # Output files
+PATH_CLUSTERS_JS = os.path.join(PATH_GENERATED, 'clusters.js')
 PATH_COUNTRYGEOJSON = os.path.join(PATH_GENERATED, 'countries.geojson')
 PATH_CLUSTERGEOJSON = os.path.join(PATH_GENERATED, 'clusters.geojson')
 
 # Final output destination
+PATH_APP_CLUSTERS_JS = os.path.join(PATH_APP_DATA, 'clusters.js')
 PATH_APP_COUNTRYGEOJSON = os.path.join(PATH_APP_DATA, 'countries.geojson')
 PATH_APP_CLUSTERGEOJSON = os.path.join(PATH_APP_DATA, 'clusters.geojson')
 
@@ -62,6 +67,16 @@ def get_clusters():
     for cluster_code in cluster_codes:
       clusters[cluster_code] = country_code
   return clusters
+
+def create_clusters_js():
+    os.makedirs(os.path.dirname(PATH_CLUSTERS_JS), exist_ok=True)
+    
+    clusters = get_clusters()
+    with open(PATH_OBJ_JS_TEMPLATE) as fp:
+        tmpl = fp.read()
+        clusters_js = Template(tmpl).substitute(obj=json.dumps(clusters))
+    with open(PATH_CLUSTERS_JS, 'w') as fp:
+        fp.write(clusters_js)
 
 def create_country_geojson():
   # FIXME German clusters can't be merged properly as there are sliver polygons, which means that some inner boundaries remain!
@@ -156,8 +171,10 @@ def create_cluster_geojson():
   minify_json(outGeoJSON)
 
 def run():
+  create_clusters_js()
   create_country_geojson()
   create_cluster_geojson()
   
+  shutil.copyfile(PATH_CLUSTERS_JS, PATH_APP_CLUSTERS_JS)
   shutil.copyfile(PATH_COUNTRYGEOJSON, PATH_APP_COUNTRYGEOJSON)
   shutil.copyfile(PATH_CLUSTERGEOJSON, PATH_APP_CLUSTERGEOJSON)

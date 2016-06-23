@@ -219,10 +219,12 @@
         }
       },
       "observedProperty": {
-        "id": "http://vocab.nerc.ac.uk/standard_name/air_temperature/",
         "label": {
-          "en": "Air temperature"
-        }
+          "en": "Air temperature at 2m"
+        },
+        "narrowerThan": [
+          "http://vocab.nerc.ac.uk/standard_name/air_temperature/"
+        ]
       }
     }
   },

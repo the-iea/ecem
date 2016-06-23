@@ -1,7 +1,12 @@
 // Copied from leaflet-coverage (currently compatible to Leaflet 0.7 only)
 
 import L from 'leaflet'
+import download from 'download'
 import Highcharts from 'highcharts'
+import HighchartsExporting from 'highcharts/modules/exporting'
+import HighchartsOfflineExporting from 'highcharts/modules/offline-exporting'
+HighchartsExporting(Highcharts)
+HighchartsOfflineExporting(Highcharts)
 
 import * as i18n from 'covutils/lib/i18n.js'
 
@@ -192,6 +197,8 @@ export default class TimeSeriesPlot extends L.Popup {
     // http://www.highcharts.com/demo/spline-irregular-time
     
     let series = []
+    
+    let getLabel = i => this._labels[i] ? this._labels[i] : obsPropLabel
             
     for (let i=0; i < this._covs.length; i++) {
       let paramKey = covsWithParamKey[i][1]
@@ -212,7 +219,7 @@ export default class TimeSeriesPlot extends L.Popup {
       }
       
       series.push({
-        name: this._labels[i] ? this._labels[i] : obsPropLabel,
+        name: getLabel(i),
         data
       })
     }
@@ -232,6 +239,38 @@ export default class TimeSeriesPlot extends L.Popup {
       credits: {
         enabled: false
       },
+      exporting: {
+        buttons: {
+          contextButton: {
+            menuItems: [{
+              text: 'Export to PNG',
+              onclick: function () {
+                this.exportChartLocal({type: 'image/png'})
+              }
+            }, {
+              text: 'Export to SVG',
+              onclick: function () {
+                this.exportChartLocal({type: 'image/svg+xml'})
+              }
+            }, {
+              separator: true
+            }, {
+              text: 'Export to CSV',
+              onclick: () => {
+                // we assume that all coverages share the same t axis
+                // TODO check this and otherwise don't offer CSV export
+                let rows = [[xLabel].concat(series.map(s => s.name))]
+                let tVals = this._domains[0].axes.get('t').values
+                for (let i=0; i < tVals.length; i++) {
+                  rows.push([tVals[i]].concat(series.map(s => s.data[i][1])))
+                }
+                let csv = rows.join('\r\n').toString()
+                download(csv, this._title + '.csv', 'text/csv')
+              }
+            }]
+          }
+        }
+      },
       title: {
         text: this._title
       },
@@ -239,7 +278,8 @@ export default class TimeSeriesPlot extends L.Popup {
         type: 'datetime',
         title: {
           text: xLabel
-        }
+        },
+        gridLineWidth: 1
       },
       yAxis: {
         title: {

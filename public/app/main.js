@@ -12,6 +12,10 @@ import Modal from 'bootstrap-native/lib/modal-native.js'
 import Dropdown from 'bootstrap-native/lib/dropdown-native.js'
 
 import * as CovJSON from 'covjson-reader'
+import * as i18n from 'covutils/lib/i18n.js'
+
+import Countries from './data/countries.js'
+import Clusters from './data/clusters.js'
 
 import EventMixin from './EventMixin.js'
 import TimeSeriesPlot from './TimeSeriesPlotHighcharts.js'
@@ -61,14 +65,14 @@ class InfoSignControl extends EventMixin(L.Control) {
 
 class ClusterModeControl extends EventMixin(L.Control) {
   constructor (options={}) {
-    super(options.position ? {position: options.position} : {position: 'bottomleft'})
+    super(options.position ? {position: options.position} : {position: 'topleft'})
     this.callback = options.callback
     this.clusters = false
   }
   
   onAdd () {
     let html = cl => (cl ? 'Hide' : 'Show') + ' Clusters'
-    let el = HTMLone('<button class="btn btn-ecem">' + html(this.clusters) + '</button>')
+    let el = HTMLone('<button class="btn btn-ecem btn-cluster-mode">' + html(this.clusters) + '</button>')
     L.DomEvent.disableClickPropagation(el)
     el.addEventListener('click', () => {
       this.clusters = !this.clusters
@@ -168,14 +172,23 @@ function loadClusterLayer () {
   return fetch('app/data/clusters.geojson')
     .then(response => response.json())
     .then(clusters => {
+      let defaultFeatureStyle = feature => ({
+        color: 'black',
+        weight: 0.5,
+        opacity: 1,
+        fillOpacity: 1,
+        fillColor: CLUSTER_COLOURS[parseInt(feature.properties.color_idx)] || CLUSTER_COLOURS[99]
+      })
       let layer = L.geoJson(clusters, {
-        style: feature => ({
-          color: 'black',
-          weight: 0.5,
-          opacity: 1,
-          fillOpacity: 1,
-          fillColor: CLUSTER_COLOURS[parseInt(feature.properties.color_idx)] || CLUSTER_COLOURS[99]
-        })
+        style: feature => defaultFeatureStyle(feature),
+        onEachFeature: (feature, layer) => {
+          layer.on('mouseover', e => {
+            let highlightStyle = defaultFeatureStyle(feature)
+            highlightStyle.fillColor = darken(highlightStyle.fillColor, 0.1)
+            e.target.setStyle(highlightStyle)
+          })
+          layer.on('mouseout', e => e.target.setStyle(defaultFeatureStyle(feature)))
+        }
       }).on('add', () => {
         // setting zindex is not supported for vector layers
         layer.bringToBack()
@@ -205,21 +218,45 @@ function loadClusterLayer () {
 }
 
 function loadCountryLayer () {
+  let defaultStyle = {
+    color: 'black',
+    weight: 2,
+    opacity: 1,
+    fill: true,
+    fillOpacity: 1,
+    fillColor: '#ADD8E6'
+  }
+  
+  let highlightStyle = JSON.parse(JSON.stringify(defaultStyle))
+  highlightStyle.fillColor = darken(defaultStyle.fillColor, 0.1)
+  
   return fetch('app/data/countries.geojson')
     .then(response => response.json())
     .then(countries => {
+      let fill = true
       let layer = L.geoJson(countries, {
-        style: feature => ({
-          color: 'black',
-          weight: 2,
-          opacity: 1,
-          fill: true,
-          fillOpacity: 1,
-          fillColor: 'lightblue'
-        })
+        style: feature => defaultStyle,
+        onEachFeature: (feature, layer) => {
+          layer.on('mouseover', e => {
+            highlightStyle.fill = fill
+            e.target.setStyle(highlightStyle)
+          })
+          layer.on('mouseout', e => {
+            defaultStyle.fill = fill
+            e.target.setStyle(defaultStyle)
+          })
+        }
       }).on('add', () => {
         // setting zindex is not supported for vector layers
         layer.bringToFront()
+      })
+      
+      layer.on('fill', () => {
+        fill = true
+        layer.setStyle({fill})
+      }).on('nofill', () => {
+        fill = false
+        layer.setStyle({fill})
       })
 
       let markers      
@@ -253,6 +290,8 @@ class App {
     let map = L.map('map', {
       center: [52, 10],
       zoom: 5,
+      minZoom: 4,
+      maxZoom: 6,
       attributionControl: false
     })
     this.map = map
@@ -270,6 +309,19 @@ class App {
       .on('click', () => {
         new Modal($$('#infoModal')).open()
       }).addTo(map)   
+      
+    this.clusterModeControl = new ClusterModeControl()
+      .on('change', e => {
+        if (e.clusters) {
+          this.clusterLayer.addTo(map)
+          this.countryLayer.fire('nofill')
+          this.countryLayer.fire('hidemarkers')
+        } else {
+          this.clusterLayer.remove()
+          this.countryLayer.fire('fill')
+          this.countryLayer.fire('showmarkers')
+        }
+      }).addTo(map)
     
     let timePeriodControl = new TimePeriodControl({initialActive: 'historic'})
       .on('click', e => {
@@ -314,18 +366,6 @@ class App {
           }
         }).addTo(map)
     })
-    this.clusterModeControl = new ClusterModeControl()
-      .on('change', e => {
-        if (e.clusters) {
-          this.clusterLayer.addTo(map)
-          this.countryLayer.setStyle({fill: false})
-          this.countryLayer.fire('hidemarkers')
-        } else {
-          this.clusterLayer.remove()
-          this.countryLayer.setStyle({fill: true})
-          this.countryLayer.fire('showmarkers')
-        }
-      }).addTo(map)
   }
   
   showCountryTestPlot (country_code, latlng) {
@@ -335,7 +375,7 @@ class App {
         new TimeSeriesPlot(cov, {
           className: 'timeseries-popup',
           maxWidth: 600,
-          title: 'ERA Tmean for ' + country_code
+          title: 'ERA Tmean for ' + i18n.getLanguageString(Countries[country_code])
         }).setLatLng(latlng)
           .addTo(this.map)
       })
@@ -343,16 +383,23 @@ class App {
   
   showCountryEnsembleTestPlot (country_code, latlng) {
     this.data.GCM_Tmean_countries
-      .then(cov => cov.subsetByValue({country: country_code, t: {start: '1979', stop: '20000'}})) // TODO allow optional start/stop
       .then(cov => {
-        new TimeSeriesPlot([cov, cov, cov], {
-          keys: [['Tmean','Tmean05','Tmean95']],
-          labels: ['Tmean', '5th percentile', '95th percentile'],
-          className: 'timeseries-popup',
-          maxWidth: 600,
-          title: 'GCM Tmean ensemble for ' + country_code
-        }).setLatLng(latlng)
-          .addTo(this.map)
+        return cov.loadDomain()
+          .then(domain => {
+            let tVals = domain.axes.get('t').values
+            let tMax = tVals[tVals.length - 1]
+            return cov.subsetByValue({country: country_code, t: {start: '1979', stop: tMax}})
+          })
+          .then(cov => {
+            new TimeSeriesPlot([cov, cov, cov], {
+              keys: [['Tmean','Tmean05','Tmean95']],
+              labels: ['Tmean', '5th percentile', '95th percentile'],
+              className: 'timeseries-popup',
+              maxWidth: 600,
+              title: 'GCM Tmean ensemble for ' + i18n.getLanguageString(Countries[country_code])
+            }).setLatLng(latlng)
+              .addTo(this.map)
+          })
       })
   }
   
@@ -360,14 +407,35 @@ class App {
     this.data.ERA_Tmean_cluster
       .then(cov => cov.subsetByValue({cluster: cluster_code}))
       .then(cov => {
+        let country_code = Clusters[cluster_code]
         new TimeSeriesPlot(cov, {
           className: 'timeseries-popup',
           maxWidth: 600,
-          title: 'ERA Tmean for ' + cluster_code
+          title: 'ERA Tmean for ' + cluster_code + ' (' + i18n.getLanguageString(Countries[country_code]) + ')'
         }).setLatLng(latlng)
           .addTo(this.map)
       })
   }
+}
+
+/**
+ * Darken a given hex color by a given ratio. If negative, lighten up.
+ * 
+ * @example
+ * let darker = darken('#ADD8E6', 0.2) // darken by 20%
+ */
+function darken (hex, ratio) {
+  hex = hex.slice(1) // strip off #
+  let lum = -ratio
+
+  let rgb = '#'
+  for (let i = 0; i < 3; i++) {
+    let c = parseInt(hex.substr(i*2,2), 16)
+    c = Math.round(Math.min(Math.max(0, c + (c * lum)), 255)).toString(16)
+    rgb += ('00'+c).substr(c.length)
+  }
+
+  return rgb
 }
 
 new App()
