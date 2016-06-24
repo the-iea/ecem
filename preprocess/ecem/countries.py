@@ -1,7 +1,7 @@
+from collections import OrderedDict, namedtuple
 import csv
 import shutil
 import os.path
-from collections import namedtuple
 import json
 from string import Template
 
@@ -16,7 +16,7 @@ PATH_APP_COUNTRYNAMES_JS = os.path.join(PATH_APP_DATA, 'countries.js')
 Country = namedtuple('Country', ['name', 'code'])
 
 def get_countries(name_only=False):
-  countries = {}
+  countries = OrderedDict()
   with open(PATH_COUNTRYNAMES, newline='') as csvfile:
     rows = csv.reader(csvfile)
     next(rows) # skip first line

@@ -166,6 +166,7 @@ class VariablesControl extends ButtonGroupControl {
       energy.style.display = 'none'
         
       $('input[name="variable"]', c).forEach(input => input.addEventListener('click', () => {
+        this.paramKey = input.value
         this.fire('paramchange', {paramKey: input.value})
       }))
     })
@@ -367,9 +368,9 @@ class App {
     L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map)
     
     this.data = {}
-    this.data.ERA_Tmean_countries = CovJSON.read('app/data/ERA_Tmean_countries_sample.covjson')
-    this.data.ERA_Tmean_cluster = CovJSON.read('app/data/ERA_Tmean_cluster_sample.covjson')
-    this.data.GCM_Tmean_countries = CovJSON.read('app/data/GCM_Tmean_countries_sample.covjson')
+    this.data.ERA_country = CovJSON.read('app/data/ERA_country.covjson')
+    this.data.ERA_cluster = CovJSON.read('app/data/ERA_cluster.covjson')
+    this.data.GCM_country = CovJSON.read('app/data/GCM_country.covjson')
     
     loadClusterLayer().then(layer => {
       this.clusterLayer = layer
@@ -395,7 +396,7 @@ class App {
   }
   
   showCountryTestPlot (country_code, latlng) {
-    this.data.ERA_Tmean_countries
+    this.data.ERA_country
       .then(cov => cov.subsetByValue({country: country_code}))
       .then(cov => {
         new TimeSeriesPlot(cov, {
@@ -408,7 +409,7 @@ class App {
   }
   
   showCountryEnsembleTestPlot (country_code, latlng) {
-    this.data.GCM_Tmean_countries
+    this.data.GCM_country
       .then(cov => {
         return cov.loadDomain()
           .then(domain => {
@@ -430,7 +431,7 @@ class App {
   }
   
   showClusterTestPlot (cluster_code, latlng) {
-    this.data.ERA_Tmean_cluster
+    this.data.ERA_cluster
       .then(cov => cov.subsetByValue({cluster: cluster_code}))
       .then(cov => {
         let country_code = Clusters[cluster_code]

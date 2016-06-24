@@ -20,14 +20,14 @@ PATH_GCM_Tmean05_country_sample_CSV = os.path.join(PATH_TIMESERIES, 'GCM_Tmean_c
 PATH_GCM_Tmean95_country_sample_CSV = os.path.join(PATH_TIMESERIES, 'GCM_Tmean_countries_sample_ens_perc95.csv')
 
 # Output files
-PATH_ERA_Tmean_countries_sample_COVJSON = os.path.join(PATH_GENERATED, 'ERA_Tmean_countries_sample.covjson')
-PATH_ERA_Tmean_cluster_sample_COVJSON = os.path.join(PATH_GENERATED, 'ERA_Tmean_cluster_sample.covjson')
-PATH_GCM_Tmean_country_sample_COVJSON = os.path.join(PATH_GENERATED, 'GCM_Tmean_countries_sample.covjson')
+PATH_ERA_country_COVJSON = os.path.join(PATH_GENERATED, 'ERA_country.covjson')
+PATH_ERA_cluster_COVJSON = os.path.join(PATH_GENERATED, 'ERA_cluster.covjson')
+PATH_GCM_country_COVJSON = os.path.join(PATH_GENERATED, 'GCM_country.covjson')
 
 # Final output destination
-PATH_APP_ERA_Tmean_countries_sample_COVJSON = os.path.join(PATH_APP_DATA, 'ERA_Tmean_countries_sample.covjson')
-PATH_APP_ERA_Tmean_cluster_sample_COVJSON = os.path.join(PATH_APP_DATA, 'ERA_Tmean_cluster_sample.covjson')
-PATH_APP_GCM_Tmean_country_sample_COVJSON = os.path.join(PATH_APP_DATA, 'GCM_Tmean_countries_sample.covjson')
+PATH_APP_ERA_country_COVJSON = os.path.join(PATH_APP_DATA, 'ERA_country.covjson')
+PATH_APP_ERA_cluster_COVJSON = os.path.join(PATH_APP_DATA, 'ERA_cluster.covjson')
+PATH_APP_GCM_country_COVJSON = os.path.join(PATH_APP_DATA, 'GCM_country.covjson')
 
 # Parameter names
 Tmean = 'T2M'
@@ -87,19 +87,19 @@ def create_timeseries_covjson(template_path, out_path, id_axis, time_columns, cs
   
 def run():
     create_timeseries_covjson(template_path=PATH_TIMESERIES_COUNTRY_COVJSON_TEMPLATE, 
-                              out_path=PATH_ERA_Tmean_countries_sample_COVJSON,
+                              out_path=PATH_ERA_country_COVJSON,
                               id_axis='country',
                               time_columns=2,
                               csv_paths={Tmean: PATH_ERA_Tmean_countries_sample_CSV})
   
     create_timeseries_covjson(template_path=PATH_TIMESERIES_CLUSTER_COVJSON_TEMPLATE, 
-                              out_path=PATH_ERA_Tmean_cluster_sample_COVJSON,
+                              out_path=PATH_ERA_cluster_COVJSON,
                               id_axis='cluster',
                               time_columns=2,
                               csv_paths={Tmean: PATH_ERA_Tmean_cluster_sample_CSV})
     
     create_timeseries_covjson(template_path=PATH_TIMESERIES_COUNTRY_ENSEMBLE_COVJSON_TEMPLATE,
-                              out_path=PATH_GCM_Tmean_country_sample_COVJSON,
+                              out_path=PATH_GCM_country_COVJSON,
                               id_axis='country',
                               time_columns=1,
                               csv_paths={
@@ -108,7 +108,7 @@ def run():
                                   Tmean95: PATH_GCM_Tmean95_country_sample_CSV
                               })
   
-    shutil.copyfile(PATH_ERA_Tmean_countries_sample_COVJSON, PATH_APP_ERA_Tmean_countries_sample_COVJSON)
-    shutil.copyfile(PATH_ERA_Tmean_cluster_sample_COVJSON, PATH_APP_ERA_Tmean_cluster_sample_COVJSON)
-    shutil.copyfile(PATH_GCM_Tmean_country_sample_COVJSON, PATH_APP_GCM_Tmean_country_sample_COVJSON)
+    shutil.copyfile(PATH_ERA_country_COVJSON, PATH_APP_ERA_country_COVJSON)
+    shutil.copyfile(PATH_ERA_cluster_COVJSON, PATH_APP_ERA_cluster_COVJSON)
+    shutil.copyfile(PATH_GCM_country_COVJSON, PATH_APP_GCM_country_COVJSON)
   
