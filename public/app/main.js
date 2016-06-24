@@ -19,7 +19,7 @@ import Clusters from './data/clusters.js'
 
 import EventMixin from './EventMixin.js'
 import TimeSeriesPlot from './TimeSeriesPlotHighcharts.js'
-import {add, $$, HTMLone} from './dom.js'
+import {add, $, $$, HTMLone} from './dom.js'
 
 //import 'c3/c3.css!'
 import './css/style.less!'
@@ -97,6 +97,7 @@ class ButtonGroupControl extends EventMixin(L.Control) {
   onAdd () {
     let el = HTMLone(this.options.template)
     L.DomEvent.disableClickPropagation(el)
+    L.DomEvent.on(el, 'mousewheel', L.DomEvent.stopPropagation)
     for (let name of this.options.names) {
       $$(this.options.classPrefix + name, el).addEventListener('click', () => {
         this._setActive(name)
@@ -143,6 +144,31 @@ class VariablesControl extends ButtonGroupControl {
     options.classPrefix = '.btn-variables-'
     options.position = options.position || 'topleft'
     super(options)
+    
+    this.on('change', ({mode}) => {
+      let c = this.getContainer()
+      let climate = $$('.climate-variables .btn-group-form-controls', c)
+      let energy = $$('.energy-variables .btn-group-form-controls', c)
+      if (mode === 'climate') {
+        climate.style.display = ''
+        energy.style.display = 'none'
+      } else if (mode === 'energy') {
+        climate.style.display = 'none'
+        energy.style.display = ''
+      }
+    })
+    
+    this.on('add', () => {
+      let c = this.getContainer()
+      
+      // by default, make climate active and hide energy
+      let energy = $$('.energy-variables .btn-group-form-controls', c)
+      energy.style.display = 'none'
+        
+      $('input[name="variable"]', c).forEach(input => input.addEventListener('click', () => {
+        this.fire('paramchange', {paramKey: input.value})
+      }))
+    })
   }
 }
 
@@ -324,13 +350,13 @@ class App {
       }).addTo(map)
     
     let timePeriodControl = new TimePeriodControl({initialActive: 'historic'})
-      .on('click', e => {
+      .on('change', e => {
         console.log(e.mode)
       }).addTo(map)
       
     let variablesControl = new VariablesControl({initialActive: 'climate'})
-      .on('click', e => {
-        console.log(e.mode)
+      .on('paramchange', e => {
+        console.log(e.paramKey)
       }).addTo(map)
       
     let helpEl = new HelpControl().createElement()
@@ -375,7 +401,7 @@ class App {
         new TimeSeriesPlot(cov, {
           className: 'timeseries-popup',
           maxWidth: 600,
-          title: 'ERA Tmean for ' + i18n.getLanguageString(Countries[country_code])
+          title: 'ERA T2M for ' + i18n.getLanguageString(Countries[country_code])
         }).setLatLng(latlng)
           .addTo(this.map)
       })
@@ -392,11 +418,11 @@ class App {
           })
           .then(cov => {
             new TimeSeriesPlot([cov, cov, cov], {
-              keys: [['Tmean','Tmean05','Tmean95']],
-              labels: ['Tmean', '5th percentile', '95th percentile'],
+              keys: [['T2M','T2M05','T2M95']],
+              labels: ['T2M', '5th percentile', '95th percentile'],
               className: 'timeseries-popup',
               maxWidth: 600,
-              title: 'GCM Tmean ensemble for ' + i18n.getLanguageString(Countries[country_code])
+              title: 'GCM T2M ensemble for ' + i18n.getLanguageString(Countries[country_code])
             }).setLatLng(latlng)
               .addTo(this.map)
           })
@@ -411,7 +437,7 @@ class App {
         new TimeSeriesPlot(cov, {
           className: 'timeseries-popup',
           maxWidth: 600,
-          title: 'ERA Tmean for ' + cluster_code + ' (' + i18n.getLanguageString(Countries[country_code]) + ')'
+          title: 'ERA T2M for ' + cluster_code + ' (' + i18n.getLanguageString(Countries[country_code]) + ')'
         }).setLatLng(latlng)
           .addTo(this.map)
       })

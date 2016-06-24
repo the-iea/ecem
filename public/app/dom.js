@@ -10,6 +10,18 @@ export function $$ (selector, parent) {
   return parent.querySelector(selector)
 }
 
+/**
+ * Returns all child elements of parent (fall-back to document if not given)
+ * matching the given selector as an array.
+ */
+export function $ (selector, parent) {
+  if (typeof parent === 'string') {
+    parent = $$(parent)
+  }
+  parent = parent || document
+  return [...parent.querySelectorAll(selector)]
+}
+
 export function add (nodes, el) {
   if (typeof nodes === 'string') {
     nodes = HTML(nodes)

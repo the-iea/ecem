@@ -27,7 +27,7 @@
     }]
   },
   "parameters" : {
-    "Tmean": {
+    "T2M": {
       "type" : "Parameter",
       "description" : {
         "en": "The air temperature at 2m measured in degrees Celsius."
@@ -48,7 +48,7 @@
         "narrowerThan": ["http://vocab.nerc.ac.uk/standard_name/air_temperature/"]
       }
     },
-    "Tmean05": {
+    "T2M05": {
       "type" : "Parameter",
       "description" : {
         "en": "5th percentile of air temperature at 2m measured in degrees Celsius."
@@ -68,7 +68,7 @@
         }
       }
     },
-    "Tmean95": {
+    "T2M95": {
       "type" : "Parameter",
       "description" : {
         "en": "95th percentile of air temperature at 2m measured in degrees Celsius."
@@ -90,21 +90,21 @@
     }
   },
   "ranges" : {
-    "Tmean" : {
+    "T2M" : {
       "type" : "NdArray",
       "dataType": "float",
       "axisNames": ["t", "country"],
       "shape": [ ],
       "values" : [ ]
     },
-    "Tmean05" : {
+    "T2M05" : {
       "type" : "NdArray",
       "dataType": "float",
       "axisNames": ["t", "country"],
       "shape": [ ],
       "values" : [ ]
     },
-    "Tmean95" : {
+    "T2M95" : {
       "type" : "NdArray",
       "dataType": "float",
       "axisNames": ["t", "country"],

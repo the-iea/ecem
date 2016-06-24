@@ -30,9 +30,9 @@ PATH_APP_ERA_Tmean_cluster_sample_COVJSON = os.path.join(PATH_APP_DATA, 'ERA_Tme
 PATH_APP_GCM_Tmean_country_sample_COVJSON = os.path.join(PATH_APP_DATA, 'GCM_Tmean_countries_sample.covjson')
 
 # Parameter names
-Tmean = 'Tmean'
-Tmean05 = 'Tmean05'
-Tmean95 = 'Tmean95'
+Tmean = 'T2M'
+Tmean05 = 'T2M05'
+Tmean95 = 'T2M95'
 
 countries = get_countries()
 clusters = get_clusters()

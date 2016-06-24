@@ -1,6 +1,11 @@
 .buttongroup-control .btn-group-vertical {
   width: 100%;
 }
+.buttongroup-control .btn-group-vertical .btn-group-form-controls {
+	max-height: 170px;
+	overflow-y: auto;
+}
+
 .buttongroup-control .panel-heading {
   padding: 5px;
 }
@@ -11,7 +16,19 @@
 
 .buttongroup-control {
   /* set explicit width to prevent resizing when making text bold */
-  width: 164px;
+  width: 174px;
   margin-bottom: 0 !important;
 }
 
+.buttongroup-control .btn-group-vertical .checkbox,
+.buttongroup-control .btn-group-vertical .radio {
+	margin: 0;
+}
+
+.buttongroup-control .btn-group-vertical .checkbox label,
+.buttongroup-control .btn-group-vertical .radio label {
+	width: 100%;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 25px;
+}
