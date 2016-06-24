@@ -517,10 +517,10 @@
     ]
   },
   "parameters": {
-    "Tmean": {
+    "T2M": {
       "type": "Parameter",
       "description": {
-        "en": "The air temperature at 2m measured in degrees Celsius."
+        "en": "The average monthly air temperature at 2m in degrees Celsius."
       },
       "unit": {
         "label": {
@@ -533,16 +533,18 @@
       },
       "observedProperty": {
         "label": {
-          "en": "Air temperature at 2m"
+          "en": "Average monthly air temperature at 2m"
         },
         "narrowerThan": [
           "http://vocab.nerc.ac.uk/standard_name/air_temperature/"
-        ]
+        ],
+        "statisticalMeasure": "http://www.uncertml.org/statistics/mean",
+        "statisticalPeriod": "P1M"
       }
     }
   },
   "ranges": {
-    "Tmean": {
+    "T2M": {
       "type": "NdArray",
       "dataType": "float",
       "axisNames": ["t", "cluster"],
