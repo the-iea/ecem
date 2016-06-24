@@ -145,6 +145,9 @@ class VariablesControl extends ButtonGroupControl {
     options.position = options.position || 'topleft'
     super(options)
     
+    // checked by default (see also template)
+    this.paramKey = 'T2M'
+    
     this.on('change', ({mode}) => {
       let c = this.getContainer()
       let climate = $$('.climate-variables .btn-group-form-controls', c)
@@ -375,19 +378,26 @@ class App {
     loadClusterLayer().then(layer => {
       this.clusterLayer = layer
         .on('click', e => {
-          let cluster_code = e.layer.feature.properties.cluster_code
-          this.showClusterTestPlot(cluster_code, e.layer.getCenter())
+          let clusterCode = e.layer.feature.properties.cluster_code
+          let paramKey = variablesControl.paramKey
+          
+          if (timePeriodControl.mode === 'historic') {
+            this.showClusterHistoricPlot(clusterCode, paramKey, e.layer.getCenter())
+          } else {
+            // not implemented
+          }
         })
     })
     loadCountryLayer().then(layer => {
       this.countryLayer = layer
         .on('click', e => {
-          let country_code = e.layer.feature.properties.country_code
+          let countryCode = e.layer.feature.properties.country_code
+          let paramKey = variablesControl.paramKey
           
           if (timePeriodControl.mode === 'historic') {
-            this.showCountryTestPlot(country_code, e.layer.getCenter())
+            this.showCountryHistoricPlot(countryCode, paramKey, e.layer.getCenter())
           } else if (timePeriodControl.mode === 'climate-projections') {
-            this.showCountryEnsembleTestPlot(country_code, e.layer.getCenter())
+            this.showCountryClimateProjectionPlot(countryCode, paramKey, e.layer.getCenter())
           } else {
             // not implemented
           }
@@ -395,50 +405,52 @@ class App {
     })
   }
   
-  showCountryTestPlot (country_code, latlng) {
+  showCountryHistoricPlot (countryCode, paramKey, latlng) {
     this.data.ERA_country
-      .then(cov => cov.subsetByValue({country: country_code}))
+      .then(cov => cov.subsetByValue({country: countryCode}))
       .then(cov => {
         new TimeSeriesPlot(cov, {
+          keys: [paramKey],
           className: 'timeseries-popup',
           maxWidth: 600,
-          title: 'ERA T2M for ' + i18n.getLanguageString(Countries[country_code])
+          title: 'ERA ' + paramKey + ' for ' + i18n.getLanguageString(Countries[countryCode])
         }).setLatLng(latlng)
           .addTo(this.map)
       })
   }
   
-  showCountryEnsembleTestPlot (country_code, latlng) {
+  showCountryClimateProjectionPlot (countryCode, paramKey, latlng) {
     this.data.GCM_country
       .then(cov => {
         return cov.loadDomain()
           .then(domain => {
             let tVals = domain.axes.get('t').values
             let tMax = tVals[tVals.length - 1]
-            return cov.subsetByValue({country: country_code, t: {start: '1979', stop: tMax}})
+            return cov.subsetByValue({country: countryCode, t: {start: '1979', stop: tMax}})
           })
           .then(cov => {
             new TimeSeriesPlot([cov, cov, cov], {
-              keys: [['T2M','T2M05','T2M95']],
-              labels: ['T2M', '5th percentile', '95th percentile'],
+              keys: [[paramKey, paramKey + '05', paramKey + '95']],
+              labels: [paramKey, '5th percentile', '95th percentile'],
               className: 'timeseries-popup',
               maxWidth: 600,
-              title: 'GCM T2M ensemble for ' + i18n.getLanguageString(Countries[country_code])
+              title: 'GCM ' + paramKey + ' ensemble for ' + i18n.getLanguageString(Countries[countryCode])
             }).setLatLng(latlng)
               .addTo(this.map)
           })
       })
   }
   
-  showClusterTestPlot (cluster_code, latlng) {
+  showClusterHistoricPlot (clusterCode, paramKey, latlng) {
     this.data.ERA_cluster
-      .then(cov => cov.subsetByValue({cluster: cluster_code}))
+      .then(cov => cov.subsetByValue({cluster: clusterCode}))
       .then(cov => {
-        let country_code = Clusters[cluster_code]
+        let countryCode = Clusters[clusterCode]
         new TimeSeriesPlot(cov, {
+          keys: [paramKey],
           className: 'timeseries-popup',
           maxWidth: 600,
-          title: 'ERA T2M for ' + cluster_code + ' (' + i18n.getLanguageString(Countries[country_code]) + ')'
+          title: 'ERA ' + paramKey + ' for ' + clusterCode + ' (' + i18n.getLanguageString(Countries[countryCode]) + ')'
         }).setLatLng(latlng)
           .addTo(this.map)
       })

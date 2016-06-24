@@ -1,10 +1,13 @@
-// Copied from leaflet-coverage (currently compatible to Leaflet 0.7 only)
+// adapted from leaflet-coverage (currently compatible to Leaflet 0.7 only)
 
+import concatMap from 'concat-map'
 import L from 'leaflet'
 import download from 'download'
 import Highcharts from 'highcharts'
+import HighchartsNoData from 'highcharts/modules/no-data-to-display'
 import HighchartsExporting from 'highcharts/modules/exporting'
 import HighchartsOfflineExporting from 'highcharts/modules/offline-exporting'
+HighchartsNoData(Highcharts)
 HighchartsExporting(Highcharts)
 HighchartsOfflineExporting(Highcharts)
 
@@ -45,6 +48,8 @@ export default class TimeSeriesPlot extends L.Popup {
    */
   constructor (coverage, options = {}) {
     options.maxWidth = options.maxWidth || 350
+    options.height = options.height || 300
+    options.spacing = options.spacing || [5, 5, 10, 5]
     super(options)
     this._covs = Array.isArray(coverage) ? coverage : [coverage]
     this._language = options.language
@@ -93,32 +98,77 @@ export default class TimeSeriesPlot extends L.Popup {
   /**
    * @ignore
    */
-  onAdd (map) {
+  onAdd (map) {    
     super.onAdd(map)
     map.fire('dataloading')
     let domainPromise = Promise.all(this._covs.map(cov => cov.loadDomain()))
-    let rangePromise = Promise.all(this._covs.map((cov,i) => cov.loadRanges(this._paramKeys[i])))
-    Promise.all([domainPromise, rangePromise]).then(([domains, ranges]) => {
-      this._domains = domains
-      this._ranges = ranges
-      this._addPlotToPopup()
-      //this.fire('add')
+    let hasUnknownParam = this._covs.some((cov,i) => this._paramKeys[i].some(key => !cov.parameters.has(key)))
+    let unknownParams = concatMap(this._covs, (cov,i) => this._paramKeys[i].filter(key => !cov.parameters.has(key)))
+    if (unknownParams.length > 0) {
+      let e = new Error('Data not available for ' + unknownParams.join(', '))
+      this._addEmptyPlotToPopup(e.message)
+      this.fire('error', e)
       map.fire('dataload')
+      return
+    }
+    
+    let rangePromise = Promise.all(this._covs.map((cov,i) => cov.loadRanges(this._paramKeys[i])))
+    
+    domainPromise.then(domains => {
+      this._domains = domains
+      return rangePromise.then(ranges => {
+        this._ranges = ranges
+        this._addPlotToPopup()
+        //this.fire('add')
+        map.fire('dataload')
+      })
     }).catch(e => {
       console.error(e)
+      this._addEmptyPlotToPopup(e.message)
       this.fire('error', e)
       map.fire('dataload')
     })
   }
   
-  _addPlotToPopup () {
+  _addEmptyPlotToPopup (reason) {
+    this._setPositionFromDomainIfMissing()
+    
+    let el = document.createElement('div')
+    Highcharts.chart(el, {
+      lang: {
+        noData: reason
+      },
+      chart: {
+        width: this.options.maxWidth,
+        height: this.options.height,
+        spacing: this.options.spacing
+      },
+      credits: {
+        enabled: false
+      },
+      title: {
+        text: this._title
+      },
+      exporting: {
+        enabled: false
+      }
+    })
+    
+    this.setContent(el)
+  }
+  
+  _setPositionFromDomainIfMissing () {
     // TODO transform if necessary
-    if (!this.getLatLng()) {
+    if (!this.getLatLng() && this._domains) {
       // in case bindPopup is not used and the caller did not set a position
       let x = this._domains[0].axes.get('x')
       let y = this._domains[0].axes.get('y')
       this.setLatLng(L.latLng(y.values[0], x.values[0]))
     }
+  }
+  
+  _addPlotToPopup () {
+    this._setPositionFromDomainIfMissing()
     
     // display first parameter group
     let paramKeyGroup = this._paramKeyGroups[0]    
@@ -230,11 +280,11 @@ export default class TimeSeriesPlot extends L.Popup {
       chart: {
         type: 'line',
         width: this.options.maxWidth,
-        height: 300,
+        height: this.options.height,
         panning: true,
         panKey: 'shift',
         zoomType: 'x',
-        spacing: [5, 5, 10, 5]
+        spacing: this.options.spacing
       },
       credits: {
         enabled: false

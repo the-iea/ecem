@@ -19,6 +19,7 @@ System.config({
     "bootstrap-native": "npm:bootstrap.native@1.0.2",
     "c3": "npm:c3@0.4.11",
     "clean-css": "npm:clean-css@3.4.17",
+    "concat-map": "npm:concat-map@0.0.1",
     "core-js": "npm:core-js@1.2.6",
     "covjson-reader": "npm:covjson-reader@0.12.1",
     "covutils": "npm:covutils@0.2.6",
