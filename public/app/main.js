@@ -351,16 +351,19 @@ class App {
           this.countryLayer.fire('fill')
           this.countryLayer.fire('showmarkers')
         }
+        if (this.map.hasLayer(this.lastPopup)) {
+          this.map.removeLayer(this.lastPopup)
+        }
       }).addTo(map)
     
-    let timePeriodControl = new TimePeriodControl({initialActive: 'historic'})
-      .on('change', e => {
-        console.log(e.mode)
+    this.timePeriodControl = new TimePeriodControl({initialActive: 'historic'})
+      .on('change', () => {
+        this.refreshPlotIfVisible()
       }).addTo(map)
       
-    let variablesControl = new VariablesControl({initialActive: 'climate'})
-      .on('paramchange', e => {
-        console.log(e.paramKey)
+    this.variablesControl = new VariablesControl({initialActive: 'climate'})
+      .on('paramchange', () => {
+        this.refreshPlotIfVisible()
       }).addTo(map)
       
     let helpEl = new HelpControl().createElement()
@@ -378,38 +381,62 @@ class App {
     loadClusterLayer().then(layer => {
       this.clusterLayer = layer
         .on('click', e => {
-          let clusterCode = e.layer.feature.properties.cluster_code
-          let paramKey = variablesControl.paramKey
-          
-          if (timePeriodControl.mode === 'historic') {
-            this.showClusterHistoricPlot(clusterCode, paramKey, e.layer.getCenter())
-          } else {
-            // not implemented
-          }
+          this.handleClusterClick(e.layer)
         })
     })
     loadCountryLayer().then(layer => {
       this.countryLayer = layer
         .on('click', e => {
-          let countryCode = e.layer.feature.properties.country_code
-          let paramKey = variablesControl.paramKey
-          
-          if (timePeriodControl.mode === 'historic') {
-            this.showCountryHistoricPlot(countryCode, paramKey, e.layer.getCenter())
-          } else if (timePeriodControl.mode === 'climate-projections') {
-            this.showCountryClimateProjectionPlot(countryCode, paramKey, e.layer.getCenter())
-          } else {
-            // not implemented
-          }
+          this.handleCountryClick(e.layer)
         }).addTo(map)
     })
+  }
+  
+  refreshPlotIfVisible () {
+    if (!this.map.hasLayer(this.lastPopup)) {
+      return
+    }
+    let lastPopup = this.lastPopup
+    if (this.clusterModeControl.clusters) {
+      this.handleClusterClick(this.lastClickedLayer)
+    } else {
+      this.handleCountryClick(this.lastClickedLayer)
+    }
+    // close old popup a little later so that flashing is avoided
+    setTimeout(() => this.map.removeLayer(lastPopup), 500)
+  }
+  
+  handleCountryClick (layer) {
+    this.lastClickedLayer = layer
+    let countryCode = layer.feature.properties.country_code
+    let paramKey = this.variablesControl.paramKey
+    
+    if (this.timePeriodControl.mode === 'historic') {
+      this.showCountryHistoricPlot(countryCode, paramKey, layer.getCenter())
+    } else if (this.timePeriodControl.mode === 'climate-projections') {
+      this.showCountryClimateProjectionPlot(countryCode, paramKey, layer.getCenter())
+    } else {
+      // not implemented
+    }
+  }
+  
+  handleClusterClick (layer) {
+    this.lastClickedLayer = layer
+    let clusterCode = layer.feature.properties.cluster_code
+    let paramKey = this.variablesControl.paramKey
+    
+    if (this.timePeriodControl.mode === 'historic') {
+      this.showClusterHistoricPlot(clusterCode, paramKey, layer.getCenter())
+    } else {
+      // not implemented
+    }
   }
   
   showCountryHistoricPlot (countryCode, paramKey, latlng) {
     this.data.ERA_country
       .then(cov => cov.subsetByValue({country: countryCode}))
       .then(cov => {
-        new TimeSeriesPlot(cov, {
+        this.lastPopup = new TimeSeriesPlot(cov, {
           keys: [paramKey],
           className: 'timeseries-popup',
           maxWidth: 600,
@@ -429,7 +456,7 @@ class App {
             return cov.subsetByValue({country: countryCode, t: {start: '1979', stop: tMax}})
           })
           .then(cov => {
-            new TimeSeriesPlot([cov, cov, cov], {
+            this.lastPopup = new TimeSeriesPlot([cov, cov, cov], {
               keys: [[paramKey, paramKey + '05', paramKey + '95']],
               labels: [paramKey, '5th percentile', '95th percentile'],
               className: 'timeseries-popup',
@@ -446,7 +473,7 @@ class App {
       .then(cov => cov.subsetByValue({cluster: clusterCode}))
       .then(cov => {
         let countryCode = Clusters[clusterCode]
-        new TimeSeriesPlot(cov, {
+        this.lastPopup = new TimeSeriesPlot(cov, {
           keys: [paramKey],
           className: 'timeseries-popup',
           maxWidth: 600,
@@ -477,5 +504,8 @@ function darken (hex, ratio) {
   return rgb
 }
 
-new App()
+let app = new App()
 
+window.api = {
+  map: app.map
+}

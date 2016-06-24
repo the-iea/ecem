@@ -6,7 +6,7 @@ export default
   
   <div class="btn-group-vertical" role="group">
     <button type="button" class="btn btn-ecem btn-timeperiod-historic">Historic</button>
-    <button type="button" class="btn btn-ecem btn-timeperiod-seasonal-forecasts">Seasonal Forecasts</button>
+    <button type="button" disabled class="btn btn-ecem btn-timeperiod-seasonal-forecasts">Seasonal Forecasts</button>
     <button type="button" class="btn btn-ecem btn-timeperiod-climate-projections">Climate Projections</button>
   </div>
 </div>`

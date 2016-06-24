@@ -32,3 +32,8 @@
   padding-bottom: 5px;
   padding-left: 25px;
 }
+
+.buttongroup-control .btn[disabled] {
+	/* default is 0.65, but we just want the cursor */
+	opacity: 1 !important;
+}

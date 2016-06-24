@@ -12,6 +12,7 @@ HighchartsExporting(Highcharts)
 HighchartsOfflineExporting(Highcharts)
 
 import * as i18n from 'covutils/lib/i18n.js'
+import * as units from 'covutils/lib/unit.js'
 
 // TODO DRY: nearly identical to VerticalProfilePlot
 
@@ -102,20 +103,19 @@ export default class TimeSeriesPlot extends L.Popup {
     super.onAdd(map)
     map.fire('dataloading')
     let domainPromise = Promise.all(this._covs.map(cov => cov.loadDomain()))
-    let hasUnknownParam = this._covs.some((cov,i) => this._paramKeys[i].some(key => !cov.parameters.has(key)))
     let unknownParams = concatMap(this._covs, (cov,i) => this._paramKeys[i].filter(key => !cov.parameters.has(key)))
-    if (unknownParams.length > 0) {
-      let e = new Error('Data not available for ' + unknownParams.join(', '))
-      this._addEmptyPlotToPopup(e.message)
-      this.fire('error', e)
-      map.fire('dataload')
-      return
+    let rangePromise
+    if (unknownParams.length === 0) {
+      rangePromise = Promise.all(this._covs.map((cov,i) => cov.loadRanges(this._paramKeys[i])))
     }
-    
-    let rangePromise = Promise.all(this._covs.map((cov,i) => cov.loadRanges(this._paramKeys[i])))
     
     domainPromise.then(domains => {
       this._domains = domains
+      
+      if (unknownParams.length > 0) {
+        throw new Error('Data not available for ' + unknownParams.join(', '))
+      }
+      
       return rangePromise.then(ranges => {
         this._ranges = ranges
         this._addPlotToPopup()
@@ -210,28 +210,6 @@ export default class TimeSeriesPlot extends L.Popup {
     return refParam
   }
   
-  // TODO move this into a reusable unit-formatting module
-  // TODO code duplication with ContinuousLegend
-  _getUnitString (param, language) {
-    if (!param.unit) {
-      return ''
-    }
-    if (param.unit.symbol) {
-      let unit = param.unit.symbol.value || param.unit.symbol
-      let scheme = param.unit.symbol.type
-      if (scheme === 'http://www.opengis.net/def/uom/UCUM/') {
-        if (unit === 'Cel') {
-          unit = '°C'
-        } else if (unit === '1') {
-          unit = ''
-        }
-      }
-      return unit
-    } else {
-      return i18n.getLanguageString(param.unit.label, language)
-    }
-  }
-  
   _getPlotElement (paramKeyGroup) {    
     let refDomain = this._domains[0]
     let covsWithParamKey = zip(this._covs, paramKeyGroup)
@@ -241,7 +219,7 @@ export default class TimeSeriesPlot extends L.Popup {
     // axis labels
     let xLabel = 'Time'
     
-    let unit = this._getUnitString(refParam, this._language)
+    let unit = units.toAscii(refParam.unit, this._language)
     let obsPropLabel = i18n.getLanguageString(refParam.observedProperty.label, this._language)
     
     // http://www.highcharts.com/demo/spline-irregular-time
