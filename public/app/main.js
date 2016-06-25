@@ -327,7 +327,11 @@ class App {
     this.map = map
     
     // center popups
-    map.on('popupopen', function(e) {
+    map.on('popupopen', e => {
+      if (this._skipNextPopupCentering) {
+        this._skipNextPopupCentering = false
+        return
+      }
       var px = map.project(e.popup._latlng)
       px.y -= e.popup._container.clientHeight/3.5
       map.panTo(map.unproject(px),{animate: true})
@@ -392,10 +396,15 @@ class App {
     })
   }
   
+  skipNextPlotCentering () {
+    this._skipNextPopupCentering = true
+  }
+  
   refreshPlotIfVisible () {
     if (!this.map.hasLayer(this.lastPopup)) {
       return
     }
+    this.skipNextPlotCentering()
     let lastPopup = this.lastPopup
     if (this.clusterModeControl.clusters) {
       this.handleClusterClick(this.lastClickedLayer)
