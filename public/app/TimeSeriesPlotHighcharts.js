@@ -4,9 +4,11 @@ import concatMap from 'concat-map'
 import L from 'leaflet'
 import download from 'download'
 import Highcharts from 'highcharts'
+import HighchartsMore from 'highcharts/highcharts-more'
 import HighchartsNoData from 'highcharts/modules/no-data-to-display'
 import HighchartsExporting from 'highcharts/modules/exporting'
 import HighchartsOfflineExporting from 'highcharts/modules/offline-exporting'
+HighchartsMore(Highcharts)
 HighchartsNoData(Highcharts)
 HighchartsExporting(Highcharts)
 HighchartsOfflineExporting(Highcharts)
@@ -53,12 +55,16 @@ export default class TimeSeriesPlot extends L.Popup {
     options.spacing = options.spacing || [5, 5, 10, 5]
     super(options)
     this._covs = Array.isArray(coverage) ? coverage : [coverage]
+    this._types = options.types ? options.types : new Array(this._covs.length)
     this._language = options.language
     this._precision = options.precision || 4
     this._title = options.title
-    this._timeFormat = "%b '%y"
     
+    // TODO match logic of paramKeyGroups below (missing: 1D options.keys array)
     this._labels = options.labels ? options.labels : new Array(this._covs.length)
+    if (typeof this._labels[0] === 'string') {
+      this._labels = [this._labels]
+    }
     
     let keyGroups = []
     if (!options.keys) {
@@ -170,9 +176,8 @@ export default class TimeSeriesPlot extends L.Popup {
   _addPlotToPopup () {
     this._setPositionFromDomainIfMissing()
     
-    // display first parameter group
-    let paramKeyGroup = this._paramKeyGroups[0]    
-    let plot = this._getPlotElement(paramKeyGroup)
+    // display first parameter group 
+    let plot = this._getPlotElement(0)
     
     let el = document.createElement('div')
     
@@ -190,8 +195,8 @@ export default class TimeSeriesPlot extends L.Popup {
       
       select.addEventListener('change', () => {
         el.removeChild(plot)
-        let group = this._paramKeyGroups[parseInt(select.value)]
-        plot = this._getPlotElement(group)
+        let groupIdx = parseInt(select.value)
+        plot = this._getPlotElement(groupIdx)
         el.appendChild(plot)
       })
       
@@ -210,7 +215,9 @@ export default class TimeSeriesPlot extends L.Popup {
     return refParam
   }
   
-  _getPlotElement (paramKeyGroup) {    
+  _getPlotElement (paramKeyGroupIndex) {
+    let paramKeyGroup = this._paramKeyGroups[paramKeyGroupIndex]
+    let chartType = this._types[paramKeyGroupIndex]
     let refDomain = this._domains[0]
     let covsWithParamKey = zip(this._covs, paramKeyGroup)
     
@@ -222,16 +229,14 @@ export default class TimeSeriesPlot extends L.Popup {
     let unit = units.toAscii(refParam.unit, this._language)
     let obsPropLabel = i18n.getLanguageString(refParam.observedProperty.label, this._language)
     
-    // http://www.highcharts.com/demo/spline-irregular-time
-    
     let series = []
     
-    let getLabel = i => this._labels[i] ? this._labels[i] : obsPropLabel
+    let getLabel = i => this._labels[paramKeyGroupIndex] ? this._labels[paramKeyGroupIndex][i] : obsPropLabel
             
-    for (let i=0; i < this._covs.length; i++) {
+    let addLineSeries = i => {
       let paramKey = covsWithParamKey[i][1]
       if (!paramKey) {
-        continue
+        return
       }
       
       let tVals = this._domains[i].axes.get('t').values
@@ -252,6 +257,38 @@ export default class TimeSeriesPlot extends L.Popup {
       })
     }
     
+    let addAreaRangeSeries = (i1, i2) => {
+      let paramKey1 = covsWithParamKey[i1][1]
+      let paramKey2 = covsWithParamKey[i2][1]
+      let vals1 = this._ranges[i1].get(paramKey1)
+      let vals2 = this._ranges[i2].get(paramKey2)
+      let tVals = this._domains[i1].axes.get('t').values
+      let data = []
+      for (let j=0; j < tVals.length; j++) {
+        let val1 = vals1.get({t: j})
+        let val2 = vals2.get({t: j})
+        let t = new Date(tVals[j]).getTime()
+        data.push([t, val1, val2])
+      }
+      
+      series.push({
+        name: getLabel(i1),
+        type: 'arearange',
+        linkedTo: ':previous',
+        data
+      })
+    }
+    
+    if (chartType === 'shadedinterval') {
+      // http://www.highcharts.com/demo/arearange-line
+      addLineSeries(0)
+      addAreaRangeSeries(1, 2)      
+    } else {
+      // http://www.highcharts.com/demo/spline-irregular-time
+      for (let i=0; i < this._covs.length; i++) {
+        addLineSeries(i)
+      }
+    }    
     
     let el = document.createElement('div')
     let chart = Highcharts.chart(el, {
@@ -287,10 +324,12 @@ export default class TimeSeriesPlot extends L.Popup {
               onclick: () => {
                 // we assume that all coverages share the same t axis
                 // TODO check this and otherwise don't offer CSV export
+
+                // TODO handle arearange type correctly (missing labels) 
                 let rows = [[xLabel].concat(series.map(s => s.name))]
                 let tVals = this._domains[0].axes.get('t').values
                 for (let i=0; i < tVals.length; i++) {
-                  rows.push([tVals[i]].concat(series.map(s => s.data[i][1])))
+                  rows.push([tVals[i]].concat(concatMap(series, s => s.data[i].slice(1))))
                 }
                 let csv = rows.join('\r\n').toString()
                 download(csv, this._title + '.csv', 'text/csv')
@@ -316,7 +355,7 @@ export default class TimeSeriesPlot extends L.Popup {
 
       },
       legend: {
-        enabled: this._covs.length > 1 ? true : false
+        enabled: this._covs.length > 1 && chartType !== 'shadedinterval' ? true : false
       },
       tooltip: {
         shared: true,
@@ -328,6 +367,17 @@ export default class TimeSeriesPlot extends L.Popup {
             symbol: 'circle',
             radius: 3
           }
+        },
+        arearange: {
+          color: Highcharts.getOptions().colors[0],
+          fillOpacity: 0.3,
+          lineWidth: 0,
+          states: {
+            hover: {
+              enabled: false
+            }
+          },
+          zIndex: -1
         }
       },
       series

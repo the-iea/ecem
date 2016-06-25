@@ -447,6 +447,7 @@ class App {
       .then(cov => {
         this.lastPopup = new TimeSeriesPlot(cov, {
           keys: [paramKey],
+          labels: [paramKey],
           className: 'timeseries-popup',
           maxWidth: 600,
           title: 'ERA ' + paramKey + ' for ' + i18n.getLanguageString(Countries[countryCode])
@@ -467,7 +468,8 @@ class App {
           .then(cov => {
             this.lastPopup = new TimeSeriesPlot([cov, cov, cov], {
               keys: [[paramKey, paramKey + '05', paramKey + '95']],
-              labels: [paramKey, '5th percentile', '95th percentile'],
+              labels: [[paramKey, '5th/95th percentile']],
+              types: ['shadedinterval'],
               className: 'timeseries-popup',
               maxWidth: 600,
               title: 'GCM ' + paramKey + ' ensemble for ' + i18n.getLanguageString(Countries[countryCode])
@@ -484,6 +486,7 @@ class App {
         let countryCode = Clusters[clusterCode]
         this.lastPopup = new TimeSeriesPlot(cov, {
           keys: [paramKey],
+          labels: [paramKey],
           className: 'timeseries-popup',
           maxWidth: 600,
           title: 'ERA ' + paramKey + ' for ' + clusterCode + ' (' + i18n.getLanguageString(Countries[countryCode]) + ')'
