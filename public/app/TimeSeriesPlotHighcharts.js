@@ -305,7 +305,7 @@ export default class TimeSeriesPlot extends L.Popup {
       xAxis: {
         type: 'datetime',
         title: {
-          text: xLabel
+          text: null
         },
         gridLineWidth: 1
       },
