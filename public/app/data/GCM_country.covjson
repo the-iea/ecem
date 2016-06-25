@@ -207,7 +207,7 @@
     "T2M": {
       "type": "Parameter",
       "description": {
-        "en": "The air temperature at 2m measured in degrees Celsius."
+        "en": "The average annual air temperature at 2m in degrees Celsius."
       },
       "unit": {
         "label": {
@@ -218,6 +218,71 @@
           "type": "http://www.opengis.net/def/uom/UCUM/"
         }
       },
+      "observedProperty": {
+        "label": {
+          "en": "Average annual air temperature at 2m"
+        },
+        "narrowerThan": [
+          "http://vocab.nerc.ac.uk/standard_name/air_temperature/"
+        ],
+        "statisticalMeasure": "http://www.uncertml.org/statistics/mean",
+        "statisticalPeriod": "P1Y"
+      }
+    },
+    "T2M05": {
+      "type": "Parameter",
+      "description": {
+        "en": "5th percentile of average annual air temperature at 2m in degrees Celsius."
+      },
+      "unit": {
+        "label": {
+          "en": "Degree Celsius"
+        },
+        "symbol": {
+          "value": "Cel",
+          "type": "http://www.opengis.net/def/uom/UCUM/"
+        }
+      },
+      "observedProperty": {
+        "label": {
+          "en": "5th percentile of average annual air temperature at 2m"
+        },
+        "narrowerThan": [
+          "http://vocab.nerc.ac.uk/standard_name/air_temperature/"
+        ],
+        "statisticalMeasure": "http://www.uncertml.org/statistics/percentile",
+        "statisticalPercentile": 5
+      }
+    },
+    "T2M95": {
+      "type": "Parameter",
+      "description": {
+        "en": "95th percentile of average annual air temperature at 2m in degrees Celsius."
+      },
+      "unit": {
+        "label": {
+          "en": "Degree Celsius"
+        },
+        "symbol": {
+          "value": "Cel",
+          "type": "http://www.opengis.net/def/uom/UCUM/"
+        }
+      },
+      "observedProperty": {
+        "label": {
+          "en": "95th percentile of average annual air temperature at 2m"
+        },
+        "narrowerThan": [
+          "http://vocab.nerc.ac.uk/standard_name/air_temperature/"
+        ],
+        "statisticalMeasure": "http://www.uncertml.org/statistics/percentile",
+        "statisticalPercentile": 95
+      }
+    }
+  },
+  "parameterGroups": [
+    {
+      "type": "ParameterGroup",
       "observedProperty": {
         "label": {
           "en": "Air temperature at 2m"
@@ -225,49 +290,14 @@
         "narrowerThan": [
           "http://vocab.nerc.ac.uk/standard_name/air_temperature/"
         ]
-      }
-    },
-    "T2M05": {
-      "type": "Parameter",
-      "description": {
-        "en": "5th percentile of air temperature at 2m measured in degrees Celsius."
       },
-      "unit": {
-        "label": {
-          "en": "Degree Celsius"
-        },
-        "symbol": {
-          "value": "Cel",
-          "type": "http://www.opengis.net/def/uom/UCUM/"
-        }
-      },
-      "observedProperty": {
-        "label": {
-          "en": "5th percentile of air temperature"
-        }
-      }
-    },
-    "T2M95": {
-      "type": "Parameter",
-      "description": {
-        "en": "95th percentile of air temperature at 2m measured in degrees Celsius."
-      },
-      "unit": {
-        "label": {
-          "en": "Degree Celsius"
-        },
-        "symbol": {
-          "value": "Cel",
-          "type": "http://www.opengis.net/def/uom/UCUM/"
-        }
-      },
-      "observedProperty": {
-        "label": {
-          "en": "95th percentile of air temperature"
-        }
-      }
+      "members": [
+        "T2M",
+        "T2M05",
+        "T2M95"
+      ]
     }
-  },
+  ],
   "ranges": {
     "T2M": {
       "type": "NdArray",

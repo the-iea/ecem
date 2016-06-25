@@ -8,9 +8,9 @@ from ecem.clusters import get_clusters
 
 # Input files
 PATH_TIMESERIES = os.path.join(PATH_DATA, 'timeseries')
-PATH_TIMESERIES_COUNTRY_COVJSON_TEMPLATE = os.path.join(PATH_TIMESERIES, 'timeseries_country.covjson_template')
-PATH_TIMESERIES_COUNTRY_ENSEMBLE_COVJSON_TEMPLATE = os.path.join(PATH_TIMESERIES, 'timeseries_country_ensemble.covjson_template')
-PATH_TIMESERIES_CLUSTER_COVJSON_TEMPLATE = os.path.join(PATH_TIMESERIES, 'timeseries_cluster.covjson_template')
+PATH_TIMESERIES_COUNTRY_MONTHLY_COVJSON_TEMPLATE = os.path.join(PATH_TIMESERIES, 'timeseries_country_monthly.covjson_template')
+PATH_TIMESERIES_COUNTRY_YEARLY_PERCENTILES_COVJSON_TEMPLATE = os.path.join(PATH_TIMESERIES, 'timeseries_country_yearly_percentiles.covjson_template')
+PATH_TIMESERIES_CLUSTER_MONTHLY_COVJSON_TEMPLATE = os.path.join(PATH_TIMESERIES, 'timeseries_cluster_monthly.covjson_template')
 
 PATH_ERA_Tmean_countries_sample_CSV = os.path.join(PATH_TIMESERIES, 'ERA_Tmean_countries_sample.csv')
 PATH_ERA_Tmean_cluster_sample_CSV = os.path.join(PATH_TIMESERIES, 'ERA_Tmean_cluster_sample.csv')
@@ -86,19 +86,19 @@ def create_timeseries_covjson(template_path, out_path, id_axis, time_columns, cs
     save_covjson(timeseries, out_path)
   
 def run():
-    create_timeseries_covjson(template_path=PATH_TIMESERIES_COUNTRY_COVJSON_TEMPLATE, 
+    create_timeseries_covjson(template_path=PATH_TIMESERIES_COUNTRY_MONTHLY_COVJSON_TEMPLATE, 
                               out_path=PATH_ERA_country_COVJSON,
                               id_axis='country',
                               time_columns=2,
                               csv_paths={Tmean: PATH_ERA_Tmean_countries_sample_CSV})
   
-    create_timeseries_covjson(template_path=PATH_TIMESERIES_CLUSTER_COVJSON_TEMPLATE, 
+    create_timeseries_covjson(template_path=PATH_TIMESERIES_CLUSTER_MONTHLY_COVJSON_TEMPLATE, 
                               out_path=PATH_ERA_cluster_COVJSON,
                               id_axis='cluster',
                               time_columns=2,
                               csv_paths={Tmean: PATH_ERA_Tmean_cluster_sample_CSV})
     
-    create_timeseries_covjson(template_path=PATH_TIMESERIES_COUNTRY_ENSEMBLE_COVJSON_TEMPLATE,
+    create_timeseries_covjson(template_path=PATH_TIMESERIES_COUNTRY_YEARLY_PERCENTILES_COVJSON_TEMPLATE,
                               out_path=PATH_GCM_country_COVJSON,
                               id_axis='country',
                               time_columns=1,
