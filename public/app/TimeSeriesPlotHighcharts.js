@@ -254,7 +254,7 @@ export default class TimeSeriesPlot extends L.Popup {
     
     
     let el = document.createElement('div')
-    Highcharts.chart(el, {
+    let chart = Highcharts.chart(el, {
       chart: {
         type: 'line',
         width: this.options.maxWidth,
@@ -332,6 +332,13 @@ export default class TimeSeriesPlot extends L.Popup {
       },
       series
     })
+    
+    // use the same date formatting for axis labels as in the tooltips
+    // otherwise the axis labels may be "2012" while the time period is 1 month (and tooltip would be "January 2012")
+    let xAxis = chart.xAxis[0]
+    let labelConfig = chart.series[0].points[0]
+    let guessedTooltipDateFormat = chart.tooltip.getXDateFormat(labelConfig, labelConfig.series.tooltipOptions, xAxis)
+    xAxis.update({labels: {format: '{value:' + guessedTooltipDateFormat + '}'}})
     
     return el
   }
