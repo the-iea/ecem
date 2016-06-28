@@ -436,6 +436,8 @@ class App {
     
     if (this.timePeriodControl.mode === 'historic') {
       this.showClusterHistoricPlot(clusterCode, paramKey, layer.getCenter())
+    } else if (this.timePeriodControl.mode === 'climate-projections') {
+      this.showClusterClimateProjectionPlot(clusterCode, paramKey, layer.getCenter())
     } else {
       // not implemented
     }
@@ -493,6 +495,26 @@ class App {
         }).setLatLng(latlng)
           .addTo(this.map)
       })
+  }
+  
+  showClusterClimateProjectionPlot (clusterCode, paramKey, latlng) {
+    paramKey = ' ' + paramKey
+    // fake plot just to get no-data message
+    this.data.GCM_country
+      .then(cov => cov.subsetByValue({country: 'DE'})
+          .then(cov => {
+            let countryCode = Clusters[clusterCode]
+            this.lastPopup = new TimeSeriesPlot([cov, cov, cov], {
+              keys: [[paramKey, paramKey + '05', paramKey + '95']],
+              labels: [[paramKey, '5th/95th percentile']],
+              types: ['shadedinterval'],
+              className: 'timeseries-popup',
+              maxWidth: 600,
+              title: 'GCM ' + paramKey + ' ensemble for ' + clusterCode + ' (' + i18n.getLanguageString(Countries[countryCode]) + ')'
+            }).setLatLng(latlng)
+              .addTo(this.map)
+          })
+      )
   }
 }
 
