@@ -12,7 +12,7 @@ import Modal from 'bootstrap-native/lib/modal-native.js'
 import Dropdown from 'bootstrap-native/lib/dropdown-native.js'
 
 import * as CovJSON from 'covjson-reader'
-import * as i18n from 'covutils/lib/i18n.js'
+import * as C from 'covutils'
 
 import Countries from './data/countries.js'
 import Clusters from './data/clusters.js'
@@ -452,7 +452,7 @@ class App {
           labels: [paramKey],
           className: 'timeseries-popup',
           maxWidth: 600,
-          title: 'ERA ' + paramKey + ' for ' + i18n.getLanguageString(Countries[countryCode])
+          title: 'ERA ' + paramKey + ' for ' + C.getLanguageString(Countries[countryCode])
         }).setLatLng(latlng)
           .addTo(this.map)
       })
@@ -474,7 +474,7 @@ class App {
               types: ['shadedinterval'],
               className: 'timeseries-popup',
               maxWidth: 600,
-              title: 'GCM ' + paramKey + ' ensemble for ' + i18n.getLanguageString(Countries[countryCode])
+              title: 'GCM ' + paramKey + ' ensemble for ' + C.getLanguageString(Countries[countryCode])
             }).setLatLng(latlng)
               .addTo(this.map)
           })
@@ -491,7 +491,7 @@ class App {
           labels: [paramKey],
           className: 'timeseries-popup',
           maxWidth: 600,
-          title: 'ERA ' + paramKey + ' for ' + clusterCode + ' (' + i18n.getLanguageString(Countries[countryCode]) + ')'
+          title: 'ERA ' + paramKey + ' for ' + clusterCode + ' (' + C.getLanguageString(Countries[countryCode]) + ')'
         }).setLatLng(latlng)
           .addTo(this.map)
       })
@@ -510,7 +510,7 @@ class App {
               types: ['shadedinterval'],
               className: 'timeseries-popup',
               maxWidth: 600,
-              title: 'GCM ' + paramKey + ' ensemble for ' + clusterCode + ' (' + i18n.getLanguageString(Countries[countryCode]) + ')'
+              title: 'GCM ' + paramKey + ' ensemble for ' + clusterCode + ' (' + C.getLanguageString(Countries[countryCode]) + ')'
             }).setLatLng(latlng)
               .addTo(this.map)
           })

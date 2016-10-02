@@ -11,7 +11,7 @@
     "url": "https://github.com/the-iea/ecem.git"
   },
   "scripts": {
-    "serve": "http-server -p 8095 -c0",
+    "start": "http-server -p 8095 -c-1",
     "postinstall": "jspm install --yes",
     "build": "npm run build-src && npm run build-min",
     "build-src": "jspm bundle-sfx app/main bundle.src.js --skip-source-maps",
@@ -20,26 +20,26 @@
   },
   "devDependencies": {
     "http-server": "^0.9.0",
-    "jspm": "^0.16.36"
+    "jspm": "^0.16.46"
   },
   "jspm": {
     "directories": {
       "baseURL": "public"
     },
     "dependencies": {
-      "bootstrap": "github:twbs/bootstrap@^3.3.5",
+      "bootstrap": "github:twbs/bootstrap@^3.3.7",
       "bootstrap-native": "npm:bootstrap.native@^1.0.2",
       "c3": "npm:c3@^0.4.11",
       "concat-map": "npm:concat-map@^0.0.1",
       "core-js": "npm:core-js@^1.1.4",
-      "covjson-reader": "npm:covjson-reader@^0.12.1",
-      "covutils": "npm:covutils@^0.2.6",
+      "covjson-reader": "npm:covjson-reader@^0.16.1",
+      "covutils": "npm:covutils@^0.6.1",
       "css": "github:systemjs/plugin-css@^0.1.13",
       "download": "npm:downloadjs@^1.4.4",
-      "fetch": "github:github/fetch@^0.10.1",
+      "fetch": "npm:whatwg-fetch@^1.0.0",
       "highcharts": "npm:highcharts@^4.2.5",
-      "leaflet": "github:Leaflet/Leaflet@1.0.0-rc.1",
-      "leaflet-loading": "github:ebrelsford/Leaflet.loading@^0.1.16",
+      "leaflet": "npm:leaflet@^1.0.1",
+      "leaflet-loading": "npm:leaflet-loading@^0.1.22",
       "less": "npm:systemjs-less-plugin@^1.8.1"
     },
     "devDependencies": {

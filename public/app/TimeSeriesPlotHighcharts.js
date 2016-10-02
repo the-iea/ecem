@@ -13,8 +13,7 @@ HighchartsNoData(Highcharts)
 HighchartsExporting(Highcharts)
 HighchartsOfflineExporting(Highcharts)
 
-import * as i18n from 'covutils/lib/i18n.js'
-import * as units from 'covutils/lib/unit.js'
+import * as C from 'covutils'
 
 // TODO DRY: nearly identical to VerticalProfilePlot
 
@@ -189,7 +188,7 @@ export default class TimeSeriesPlot extends L.Popup {
         let refParam = this._getRefParam(paramKeyGroup)
         let option = document.createElement('option')
         option.value = i
-        option.text = i18n.getLanguageString(refParam.observedProperty.label, this._language)
+        option.text = C.getLanguageString(refParam.observedProperty.label, this._language)
         select.appendChild(option)
       }
       
@@ -226,8 +225,8 @@ export default class TimeSeriesPlot extends L.Popup {
     // axis labels
     let xLabel = 'Time'
     
-    let unit = units.toAscii(refParam.unit, this._language)
-    let obsPropLabel = i18n.getLanguageString(refParam.observedProperty.label, this._language)
+    let unit = C.stringifyUnit(refParam.unit, this._language)
+    let obsPropLabel = C.getLanguageString(refParam.observedProperty.label, this._language)
     
     let series = []
     

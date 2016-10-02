@@ -4,7 +4,7 @@ import L from 'leaflet'
 import c3 from 'c3'
 import './c3CullingMax.js'
 
-import * as i18n from 'covutils/lib/i18n.js'
+import * as C from 'covutils'
 
 // TODO DRY: nearly identical to VerticalProfilePlot
 
@@ -128,7 +128,7 @@ export default class TimeSeriesPlot extends L.Popup {
         let refParam = this._getRefParam(paramKeyGroup)
         let option = document.createElement('option')
         option.value = i
-        option.text = i18n.getLanguageString(refParam.observedProperty.label, this._language)
+        option.text = C.getLanguageString(refParam.observedProperty.label, this._language)
         select.appendChild(option)
       }
       
@@ -172,7 +172,7 @@ export default class TimeSeriesPlot extends L.Popup {
       }
       return unit
     } else {
-      return i18n.getLanguageString(param.unit.label, language)
+      return C.getLanguageString(param.unit.label, language)
     }
   }
   
@@ -186,7 +186,7 @@ export default class TimeSeriesPlot extends L.Popup {
     let xLabel = 'Time'
     
     let unit = this._getUnitString(refParam, this._language)
-    let obsPropLabel = i18n.getLanguageString(refParam.observedProperty.label, this._language)
+    let obsPropLabel = C.getLanguageString(refParam.observedProperty.label, this._language)
     
     // http://c3js.org/samples/simple_xy_multiple.html
     
