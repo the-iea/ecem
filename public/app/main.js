@@ -1,34 +1,45 @@
+// polyfills
 import 'core-js/es6'
 import 'fetch'
 
+// Leaflet
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css!'
 import 'leaflet-loading'
 import 'leaflet-loading/src/Control.Loading.css!'
 
+// Bootstrap
 import 'bootstrap/css/bootstrap.css!'
-
 import Modal from 'bootstrap-native/lib/modal-native.js'
-import Dropdown from 'bootstrap-native/lib/dropdown-native.js'
 
+// CovJSON
 import * as CovJSON from 'covjson-reader'
 import * as C from 'covutils'
 
+// Country and cluster data
 import Countries from './data/countries.js'
 import Clusters from './data/clusters.js'
 
-import EventMixin from './EventMixin.js'
+// time series plot
 import TimeSeriesPlot from './TimeSeriesPlotHighcharts.js'
-import {add, $, $$, HTMLone} from './dom.js'
 
-//import 'c3/c3.css!'
+// various controls for the Leaflet map
+import InfoSignControl from './controls/InfoSignControl.js'
+import ClusterModeControl from './controls/ClusterModeControl.js'
+import TimePeriodControl from './controls/TimePeriodControl.js'
+import VariablesControl from './controls/VariablesControl.js'
+import HelpControl from './controls/HelpControl.js'
+
+// DOM helpers
+import {add, $, $$} from './dom.js'
+
+// styles
+// import 'c3/c3.css!'
 import './css/style.less!'
 import './css/control.ButtonGroup.css!'
 import './css/control.Help.css!'
 
-import TEMPLATE_VARIABLESCONTROL from './templates/control.Variables.js'
-import TEMPLATE_TIMEPERIODCONTROL from './templates/control.TimePeriod.js'
-import TEMPLATE_HELPCONTROL from './templates/control.Help.js'
+// the main template
 import TEMPLATE_INDEX from './templates/index.js'
 
 add(TEMPLATE_INDEX, document.body)
@@ -45,157 +56,6 @@ const CLUSTER_COLOURS = {
   8: '#88c4aa',
   9: '#59a3b2',
   99: '#2b83ba'
-}
- 
-class InfoSignControl extends EventMixin(L.Control) {
-  constructor (options={}) {
-    super(options.position ? {position: options.position} : {position: 'bottomright'})
-  }
-  
-  onAdd () {
-    let el = HTMLone('<div class="info-sign-control"><a href="#"><span class="glyphicon glyphicon-info-sign text-muted"></span></a></div>')
-    L.DomEvent.disableClickPropagation(el)
-    $$('a', el).addEventListener('click', e => {
-      L.DomEvent.preventDefault(e)
-      this.fire('click')
-    })
-    return el
-  }   
-}
-
-class ClusterModeControl extends EventMixin(L.Control) {
-  constructor (options={}) {
-    super(options.position ? {position: options.position} : {position: 'topleft'})
-    this.callback = options.callback
-    this.clusters = false
-  }
-  
-  onAdd () {
-    let html = cl => (cl ? 'Hide' : 'Show') + ' Clusters'
-    let el = HTMLone('<button class="btn btn-ecem btn-cluster-mode">' + html(this.clusters) + '</button>')
-    L.DomEvent.disableClickPropagation(el)
-    el.addEventListener('click', () => {
-      this.clusters = !this.clusters
-      el.innerHTML = html(this.clusters)
-      this.fire('change', {clusters: this.clusters})
-    })    
-    return el
-  }   
-}
-
-class ButtonGroupControl extends EventMixin(L.Control) {
-  constructor (options={}) {
-    options.position = options.position || 'topleft'
-    super(options)
-    this.on('add', () => {
-      if (this.options.initialActive) {
-        this._setActive(this.options.initialActive)
-      }
-    })
-  }
-  
-  onAdd () {
-    let el = HTMLone(this.options.template)
-    L.DomEvent.disableClickPropagation(el)
-    L.DomEvent.on(el, 'mousewheel', L.DomEvent.stopPropagation)
-    for (let name of this.options.names) {
-      $$(this.options.classPrefix + name, el).addEventListener('click', () => {
-        this._setActive(name)
-        this.fire('change', {mode: name})
-      })
-    }
-    return el
-  }
-  
-  addTo (map) {
-    super.addTo(map)
-    this.fire('add')
-    return this
-  }
-  
-  _setActive (nameToActivate) {
-    this.mode = nameToActivate
-    let c = this.getContainer()
-    let el = $$(this.options.classPrefix + nameToActivate, c)
-    el.style.fontWeight = 'bold'
-    L.DomUtil.addClass(el, 'active')
-    for (let name of this.options.names.filter(n => n !== nameToActivate)) {
-      let el = $$(this.options.classPrefix + name, c)
-      el.style.fontWeight = 'initial'
-      L.DomUtil.removeClass(el, 'active')
-    }
-  }
-}
-
-class TimePeriodControl extends ButtonGroupControl {
-  constructor (options={}) {
-    options.template = TEMPLATE_TIMEPERIODCONTROL
-    options.names = ['historic', 'seasonal-forecasts', 'climate-projections']
-    options.classPrefix = '.btn-timeperiod-'
-    options.position = options.position || 'topleft'
-    super(options)
-  }
-}
-
-class VariablesControl extends ButtonGroupControl {
-  constructor (options={}) {
-    options.template = TEMPLATE_VARIABLESCONTROL
-    options.names = ['energy', 'climate']
-    options.classPrefix = '.btn-variables-'
-    options.position = options.position || 'topleft'
-    super(options)
-    
-    // checked by default (see also template)
-    this.paramKey = 'T2M'
-    
-    this.on('change', ({mode}) => {
-      let c = this.getContainer()
-      let climate = $$('.climate-variables .btn-group-form-controls', c)
-      let energy = $$('.energy-variables .btn-group-form-controls', c)
-      if (mode === 'climate') {
-        climate.style.display = ''
-        energy.style.display = 'none'
-      } else if (mode === 'energy') {
-        climate.style.display = 'none'
-        energy.style.display = ''
-      }
-    })
-    
-    this.on('add', () => {
-      let c = this.getContainer()
-      
-      // by default, make climate active and hide energy
-      let energy = $$('.energy-variables .btn-group-form-controls', c)
-      energy.style.display = 'none'
-        
-      $('input[name="variable"]', c).forEach(input => input.addEventListener('click', () => {
-        this.paramKey = input.value
-        this.fire('paramchange', {paramKey: input.value})
-      }))
-    })
-  }
-}
-
-/**
- * Not a real leaflet control, but rather has to be added to the #map element.
- */
-class HelpControl extends L.Class { 
-  createElement () {
-    let el = HTMLone(TEMPLATE_HELPCONTROL)
-    L.DomEvent.disableClickPropagation(el)
-    
-    new Dropdown($$('.help-dropdown .dropdown-toggle', el))
-    
-    for (let name of ['usage', 'methods', 'results', 'casestudies']) {
-      for (let menuEl of [$$('.btn-help-' + name, el), $$('.dropdown-help-' + name, el)]) {
-        menuEl.addEventListener('click', () => {
-          let uc = name.charAt(0).toUpperCase() + name.slice(1)
-          new Modal($$('#help' + uc + 'Modal')).open()
-        })
-      }
-    }
-    return el
-  }
 }
 
 function loadClusterLayer () {

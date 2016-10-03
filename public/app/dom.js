@@ -1,6 +1,9 @@
 /**
  * Returns the first child element of parent (fall-back to document if not given)
  * matching the given selector.
+ * 
+ * @example
+ * let element = $$('.myclass')
  */
 export function $$ (selector, parent) {
   if (typeof parent === 'string') {
@@ -13,6 +16,9 @@ export function $$ (selector, parent) {
 /**
  * Returns all child elements of parent (fall-back to document if not given)
  * matching the given selector as an array.
+ * 
+ * @example
+ * let items = $('.item', '#list')
  */
 export function $ (selector, parent) {
   if (typeof parent === 'string') {
@@ -22,6 +28,12 @@ export function $ (selector, parent) {
   return [...parent.querySelectorAll(selector)]
 }
 
+/**
+ * Adds the given elements as children to the given parent element.
+ * 
+ * @param {string|Node|Array<Node>} nodes The elements to add to `el`.
+ * @param {Node} el The parent element.
+ */
 export function add (nodes, el) {
   if (typeof nodes === 'string') {
     nodes = HTML(nodes)
@@ -35,6 +47,9 @@ export function add (nodes, el) {
 /**
  * Turns an HTML string into a DOM element.
  * The HTML markup must have a single root node, whitespace is ignored.
+ * 
+ * @param {string} html The HTML string out of which to create the single DOM element.
+ * @return {Element}
  * 
  * @example 
  * var s = '<li>text</li>'
