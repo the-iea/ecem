@@ -46,6 +46,7 @@ WGS84 = osr.SpatialReference()
 WGS84.ImportFromProj4('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
 
 def get_clusters_by_country():
+    ''' Returns a dictionary where each key is a country code and each value a list of corresponding cluster codes. '''
     # we use an ordered dict to have consistent ordering when generating files based on this dict
     country_clusters = OrderedDict()
     with open(PATH_CLUSTERNAMES, newline='') as csvfile:
@@ -61,6 +62,7 @@ def get_clusters_by_country():
     return country_clusters
 
 def get_clusters():
+  ''' Returns a dictionary where each key is a cluster code and each value the corresponding country code. '''
   country_clusters = get_clusters_by_country()
   clusters = OrderedDict()
   for country_code, cluster_codes in country_clusters.items():
@@ -69,6 +71,7 @@ def get_clusters():
   return clusters
 
 def create_clusters_js():
+    ''' Creates the clusters.js file which maps cluster to country codes. '''
     os.makedirs(os.path.dirname(PATH_CLUSTERS_JS), exist_ok=True)
     
     clusters = get_clusters()
@@ -79,6 +82,13 @@ def create_clusters_js():
         fp.write(clusters_js)
 
 def create_country_geojson():
+  '''
+  Creates the countries.geojson file which contains geometries ([Multi]Polygon) for each country
+  in longitude/latitude coordinates.
+
+  Each country geometry is derived by merging the corresponding cluster geometries from the Shapefile,
+  reprojecting to longitude/latitude, and simplifying the resulting polygons to reduce data volume.
+  '''
   # FIXME German clusters can't be merged properly as there are sliver polygons, which means that some inner boundaries remain!
   # problem description and solution: http://gis.stackexchange.com/a/71729
   # tried that in GRASS but got a crash: https://trac.osgeo.org/grass/ticket/3061
@@ -126,6 +136,12 @@ def create_country_geojson():
 
 def create_cluster_geojson():
   '''
+  Creates the clusters.geojson file which contains geometries ([Multi]Polygon) for each cluster
+  in longitude/latitude coordinates.
+
+  Each cluster geometry is derived by reading the geometry from the Shapefile,
+  reprojecting to longitude/latitude, and simplifying the resulting polygons to reduce data volume.
+
   Definition of clusters:
   http://www.e-highway2050.eu/fileadmin/documents/Results/D2_2_European_cluster_model_of_the_Pan-European_transmission_grid_20072015.pdf
   '''
@@ -171,6 +187,10 @@ def create_cluster_geojson():
   minify_json(outGeoJSON)
 
 def run():
+  '''
+  Runs all transformations defined in this module and copies the generated files
+  to their final location in the web app.
+  '''
   create_clusters_js()
   create_country_geojson()
   create_cluster_geojson()

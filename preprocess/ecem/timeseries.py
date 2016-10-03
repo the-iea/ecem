@@ -38,6 +38,7 @@ countries = get_countries()
 clusters = get_clusters()
 
 def create_timeseries_covjson(template_path, out_path, id_axis, time_columns, csv_paths):
+    ''' Creates a CovJSON file with time series data. See run() for application. '''
     timeseries = load_json(template_path)
   
     # fill domain
@@ -46,7 +47,7 @@ def create_timeseries_covjson(template_path, out_path, id_axis, time_columns, cs
         rows = csv.reader(csvfile)
         id_codes = next(rows)[time_columns:]
         
-        # fill 'country' domain axis
+        # fill 'country'/'cluster' domain axis
         timeseries['domain']['axes'][id_axis]['values'] = id_codes
         identifiers = timeseries['domain']['referencing'][0]['system']['identifiers']
         for code in id_codes:
@@ -86,6 +87,10 @@ def create_timeseries_covjson(template_path, out_path, id_axis, time_columns, cs
     save_covjson(timeseries, out_path)
   
 def run():
+    '''
+    Runs all transformations defined in this module and copies the generated files
+    to their final location in the web app.
+    '''
     create_timeseries_covjson(template_path=PATH_TIMESERIES_COUNTRY_MONTHLY_COVJSON_TEMPLATE, 
                               out_path=PATH_ERA_country_COVJSON,
                               id_axis='country',
