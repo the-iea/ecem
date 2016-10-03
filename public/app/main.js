@@ -16,7 +16,7 @@ import Modal from 'bootstrap-native/lib/modal-native.js'
 import * as CovJSON from 'covjson-reader'
 import * as C from 'covutils'
 
-// Country and cluster data
+// Mappings between country and cluster IDs/labels
 import Countries from './data/countries.js'
 import Clusters from './data/clusters.js'
 
@@ -29,6 +29,10 @@ import ClusterModeControl from './controls/ClusterModeControl.js'
 import TimePeriodControl from './controls/TimePeriodControl.js'
 import VariablesControl from './controls/VariablesControl.js'
 import HelpControl from './controls/HelpControl.js'
+
+// Country/Cluster layers
+import {loadCountryLayer} from './layers/CountryLayer.js'
+import {loadClusterLayer} from './layers/ClusterLayer.js'
 
 // DOM helpers
 import {add, $, $$} from './dom.js'
@@ -43,137 +47,6 @@ import './css/control.Help.css!'
 import TEMPLATE_INDEX from './templates/index.js'
 
 add(TEMPLATE_INDEX, document.body)
-
-const CLUSTER_COLOURS = {
-  0: '#d7191c',
-  1: '#f2854e',
-  2: '#fdb569',
-  3: '#fdd28b',
-  4: '#fef0ad',
-  5: '#eff8ba',
-  6: '#d1ecb0',
-  7: '#b2e0a6',
-  8: '#88c4aa',
-  9: '#59a3b2',
-  99: '#2b83ba'
-}
-
-function loadClusterLayer () {
-  return fetch('app/data/clusters.geojson')
-    .then(response => response.json())
-    .then(clusters => {
-      let defaultFeatureStyle = feature => ({
-        color: 'black',
-        weight: 0.5,
-        opacity: 1,
-        fillOpacity: 1,
-        fillColor: CLUSTER_COLOURS[parseInt(feature.properties.color_idx)] || CLUSTER_COLOURS[99]
-      })
-      let layer = L.geoJson(clusters, {
-        style: feature => defaultFeatureStyle(feature),
-        onEachFeature: (feature, layer) => {
-          layer.on('mouseover', e => {
-            let highlightStyle = defaultFeatureStyle(feature)
-            highlightStyle.fillColor = darken(highlightStyle.fillColor, 0.1)
-            e.target.setStyle(highlightStyle)
-          })
-          layer.on('mouseout', e => e.target.setStyle(defaultFeatureStyle(feature)))
-        }
-      }).on('add', () => {
-        // setting zindex is not supported for vector layers
-        layer.bringToBack()
-      })
-      
-      let markers      
-      layer.on('add', () => {
-        if (!markers) {
-          // getCenter() can only be called after the layers have been added to the map
-          markers = layer.getLayers().map(featureLayer => 
-            L.marker(featureLayer.getCenter(), {
-              interactive: false,
-              icon: L.divIcon({
-                className: 'polygon-label',
-                html: '<h5><span class="label label-default">' + featureLayer.feature.properties.cluster_code + '</span></h5>'
-              })
-            })
-          )
-        }
-        markers.forEach(l => l.addTo(layer._map))
-      }).on('remove', () => {
-        markers.forEach(l => l.remove())
-      })
-      
-      return layer
-  })
-}
-
-function loadCountryLayer () {
-  let defaultStyle = {
-    color: 'black',
-    weight: 2,
-    opacity: 1,
-    fill: true,
-    fillOpacity: 1,
-    fillColor: '#ADD8E6'
-  }
-  
-  let highlightStyle = JSON.parse(JSON.stringify(defaultStyle))
-  highlightStyle.fillColor = darken(defaultStyle.fillColor, 0.1)
-  
-  return fetch('app/data/countries.geojson')
-    .then(response => response.json())
-    .then(countries => {
-      let fill = true
-      let layer = L.geoJson(countries, {
-        style: feature => defaultStyle,
-        onEachFeature: (feature, layer) => {
-          layer.on('mouseover', e => {
-            highlightStyle.fill = fill
-            e.target.setStyle(highlightStyle)
-          })
-          layer.on('mouseout', e => {
-            defaultStyle.fill = fill
-            e.target.setStyle(defaultStyle)
-          })
-        }
-      }).on('add', () => {
-        // setting zindex is not supported for vector layers
-        layer.bringToFront()
-      })
-      
-      layer.on('fill', () => {
-        fill = true
-        layer.setStyle({fill})
-      }).on('nofill', () => {
-        fill = false
-        layer.setStyle({fill})
-      })
-
-      let markers      
-      layer.on('add showmarkers', () => {
-        if (!markers) {
-          // getCenter() can only be called after the layers have been added to the map
-          markers = layer.getLayers().map(featureLayer => {
-            let code = featureLayer.feature.properties.country_code
-            // AT has weird centroid position, use bbox center instead
-            let pos = code === 'AT' ? featureLayer.getBounds().getCenter() : featureLayer.getCenter()
-            return L.marker(pos, {
-              interactive: false,
-              icon: L.divIcon({
-                className: 'polygon-label',
-                html: '<h5><span class="label label-default">' + code + '</span></h5>'
-              })
-            })
-          })
-        }
-        markers.forEach(l => l.addTo(layer._map))
-      }).on('remove hidemarkers', () => {
-        markers.forEach(l => l.remove())
-      })
-      
-      return layer
-  })
-}
 
 class App {
   constructor () {
@@ -242,13 +115,13 @@ class App {
     this.data.ERA_cluster = CovJSON.read('app/data/ERA_cluster.covjson')
     this.data.GCM_country = CovJSON.read('app/data/GCM_country.covjson')
     
-    loadClusterLayer().then(layer => {
+    loadClusterLayer('app/data/clusters.geojson').then(layer => {
       this.clusterLayer = layer
         .on('click', e => {
           this.handleClusterClick(e.layer)
         })
     })
-    loadCountryLayer().then(layer => {
+    loadCountryLayer('app/data/countries.geojson').then(layer => {
       this.countryLayer = layer
         .on('click', e => {
           this.handleCountryClick(e.layer)
@@ -376,26 +249,6 @@ class App {
           })
       )
   }
-}
-
-/**
- * Darken a given hex color by a given ratio. If negative, lighten up.
- * 
- * @example
- * let darker = darken('#ADD8E6', 0.2) // darken by 20%
- */
-function darken (hex, ratio) {
-  hex = hex.slice(1) // strip off #
-  let lum = -ratio
-
-  let rgb = '#'
-  for (let i = 0; i < 3; i++) {
-    let c = parseInt(hex.substr(i*2,2), 16)
-    c = Math.round(Math.min(Math.max(0, c + (c * lum)), 255)).toString(16)
-    rgb += ('00'+c).substr(c.length)
-  }
-
-  return rgb
 }
 
 let app = new App()
