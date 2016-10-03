@@ -7,7 +7,7 @@
       "t": { "values": [] }
     },
     "referencing": [{
-      "components": ["cluster"],
+      "coordinates": ["cluster"],
       "system": {
         "type": "IdentifierRS",
         "label": { "en": "e-Highway2050 Cluster Codes" },
@@ -17,7 +17,7 @@
         "identifiers": {}
       }
     }, {
-      "components": ["t"],
+      "coordinates": ["t"],
       "system": {
         "type": "TemporalRS",
         "calendar": "Gregorian"
