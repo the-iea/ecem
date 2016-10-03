@@ -75,8 +75,8 @@ Follow these steps when deploying the website:
    The following steps assume you have an `ecem` and `ecem-gh-pages` folder, pointing at `master` and `gh-pages`, respectively.
 2. Run `npm run build` in the `ecem` folder to create a minified bundle `bundle.min.js` containing all JavaScript and CSS code.
 3. Copy `bundle.min.js` into the `ecem-gh-pages` folder.
-4. If any files within the `ecem/public/app/data` and `ecem/public/app/img` folders were updated then copy those files
-   to the `ecem-gh-pages/app/data` and `ecem-gh-pages/app/img` folders, respectively.
+4. If any files within the `ecem/public/app/data` or `ecem/public/app/img` folders were updated then copy those files
+   to the `ecem-gh-pages/app/data` or `ecem-gh-pages/app/img` folders, respectively.
 5. Commit and push all changes to the `gh-pages` branch within the `ecem-gh-pages` folder.
    GitHub Pages currently tells browsers to cache any website resources for 10min.
    If you still see the old version, either wait or clear your browser cache.
