@@ -21,7 +21,7 @@ import Countries from './data/countries.js'
 import Clusters from './data/clusters.js'
 
 // time series plot
-import TimeSeriesPlot from './TimeSeriesPlotHighcharts.js'
+import TimeSeriesPlot from './popups/TimeSeriesPlotHighcharts.js'
 
 // various controls for the Leaflet map
 import InfoSignControl from './controls/InfoSignControl.js'
@@ -46,10 +46,13 @@ import './css/control.Help.css!'
 // the main template
 import TEMPLATE_INDEX from './templates/index.js'
 
-add(TEMPLATE_INDEX, document.body)
-
+/**
+ * This class builds the whole application and plugs everything together using events.
+ */
 class App {
   constructor () {
+    add(TEMPLATE_INDEX, document.body)
+
     let map = L.map('map', {
       center: [52, 10],
       zoom: 5,
