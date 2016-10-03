@@ -6,26 +6,13 @@ that is currently being developed as part of the
 
 Latest development version: https://the-iea.github.io/ecem
 
-## Development setup
+## Bug reporting
 
-```bash
-$ npm install
-$ npm start
-Starting up http-server, serving ./public
-Available on:
-  http://127.0.0.1:8095
-```
+The website shall run on modern tablet and desktop browsers.
+If you discover any issue in those environments please open an [issue](https://github.com/the-iea/ecem/issues/new)
+and we will try to fix it.
 
-Now go to <http://localhost:8095>.
+## Development
 
-While running in development mode, any code can be changed and a simple browser page refresh reflects that change.
-
-## Bundle creation for production use
-
-The production website needs a minified bundle which includes all JavaScript and CSS code.
-It can be created with `npm run build` which builds `bundle.min.js`.
-Copy this file into the `gh-pages` branch to update the website.
-Any other resources that are loaded dynamically (like GeoJSON assets or other data)
-have to be copied over to the `gh-pages` branch manually.
-Currently, this is everything in the `/public/app/data` and `/public/app/img` folders.
-Note that every git push to `gh-pages` updates the website immediately.
+For information on how to set up a local development environment and deploy new versions,
+head over to the [development guide](DEVELOPMENT.md).
