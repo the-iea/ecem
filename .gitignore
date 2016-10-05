@@ -1,9 +1,10 @@
 /.project
+/.tern-project
+/node_modules/
 /public/jspm_packages/
 /bundle.*
+/docs
 /*.log
-/node_modules/
-/.tern-project
 /preprocess/generated/
 __pycache__
 /.pydevproject

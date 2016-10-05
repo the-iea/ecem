@@ -1,6 +1,6 @@
 # Web application
 
-The used packages manager is [jspm](http://jspm.io/).
+The used package manager is [jspm](http://jspm.io/).
 
 The user interface is created using the following packages:
 - [Leaflet](http://leafletjs.com/) for the map

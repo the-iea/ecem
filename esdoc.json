@@ -1,0 +1,14 @@
+{
+  "source": "./public/app",
+  "destination": "./docs",
+  "plugins": [
+    {
+      "name": "esdoc-importpath-plugin",
+      "option": {
+        "replaces": [
+          {"from": "^./app/", "to": "./"}
+        ]
+      }
+    }
+  ]
+}

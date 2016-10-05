@@ -1,13 +1,35 @@
 import L from 'leaflet'
-import EventMixin from '../EventMixin.js'
-import {$$, HTMLone} from '../dom.js'
+import EventMixin from '../util/EventMixin.js'
+import {$$, HTMLone} from '../util/dom.js'
+
+/**
+ * The `add` event, signalling that the control has been added to the map.
+ * 
+ * @typedef {Object} ButtonGroupControl#add
+ */
+
+/**
+ * The `change` event, signalling that a different button has been pressed.
+ * 
+ * @typedef {Object} ButtonGroupControl#change
+ * @property {string} name The button name.
+ */
 
 /**
  * Abstract control.
- * See TimePeriodControl and VariableControl for concrete implementations.
+ * 
+ * See {@link TimePeriodControl} and {@link VariablesControl} for concrete implementations.
+ * 
+ * @extends {L.Control}
+ * @extends {EventMixin}
+ * 
+ * @emits {ButtonGroupControl#add} after the control has been added to the map
+ * @emits {ButtonGroupControl#change} when a different button is selected
  */
 export default class ButtonGroupControl extends EventMixin(L.Control) {
   /**
+   * @param {string} [options.position='topleft'] The position of the control (one of the map corners).
+   *    Possible values are 'topleft', 'topright', 'bottomleft' or 'bottomright'.
    * @param {string} [options.initialActive] If set, the name of the button that is initially active/pressed.
    * @param {string} options.template The HTML template to use.
    * @param {string} options.classPrefix The CSS class prefix of the button elements.
@@ -23,6 +45,13 @@ export default class ButtonGroupControl extends EventMixin(L.Control) {
     })
   }
   
+  /**
+   * Creates the {@link HTMLElement} of the control, registers listeners, and returns it.
+   * This method is called directly by Leaflet, use {@link ButtonGroupControl#addTo} instead.
+   * 
+   * @override
+   * @returns {HTMLElement}
+   */
   onAdd () {
     let el = HTMLone(this.options.template)
     L.DomEvent.disableClickPropagation(el)
@@ -30,12 +59,18 @@ export default class ButtonGroupControl extends EventMixin(L.Control) {
     for (let name of this.options.names) {
       $$(this.options.classPrefix + name, el).addEventListener('click', () => {
         this._setActive(name)
-        this.fire('change', {mode: name})
+        this.fire('change', {name})
       })
     }
     return el
   }
   
+  /**
+   * Adds the control to the given map.
+   * 
+   * @override
+   * @param {L.Map} map The map this control should be added to.
+   */
   addTo (map) {
     super.addTo(map)
     this.fire('add')
@@ -43,16 +78,18 @@ export default class ButtonGroupControl extends EventMixin(L.Control) {
   }
   
   _setActive (nameToActivate) {
-    this.mode = nameToActivate
+    /** 
+     * The name of the currently active button.
+     * 
+     * @type {string}
+     */
+    this.name = nameToActivate
+
     let c = this.getContainer()
-    let el = $$(this.options.classPrefix + nameToActivate, c)
-    // TODO don't manipulate style directly, should happen in CSS class
-    el.style.fontWeight = 'bold'
-    L.DomUtil.addClass(el, 'active')
-    for (let name of this.options.names.filter(n => n !== nameToActivate)) {
-      let el = $$(this.options.classPrefix + name, c)
-      el.style.fontWeight = 'initial'
-      L.DomUtil.removeClass(el, 'active')
+
+    for (let name of this.options.names) {
+      $$(this.options.classPrefix + name, c).classList.remove('active')
     }
+    $$(this.options.classPrefix + nameToActivate, c).classList.add('active')
   }
 }

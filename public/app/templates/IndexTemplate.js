@@ -1,4 +1,8 @@
-export default `
+/**
+ * The template for the {@link App}.
+ * @type {string}
+ */
+let IndexTemplate = `
 <div id="container">
   <div id="ecem-banner" class="ecem">
     <div><img src="app/img/C3S-Banner2.svg"></div>
@@ -129,3 +133,5 @@ export default `
   
 </div>
 `
+
+export default IndexTemplate

@@ -1,14 +1,14 @@
 import L from 'leaflet'
 
-let Events = L.Mixin.Events
+let Events = L.Evented.prototype
 
 /**
- * Wraps Leaflet's L.Mixin.Events for use within class expressions.
+ * Wraps Leaflet's {@link L.Evented} for use within class expressions.
  * 
  * @see http://justinfagnani.com/2015/12/21/real-mixins-with-javascript-classes/
  * 
  * @param {class} base The base class.
- * @return {class} The base class with EventMixin.
+ * @return {class} The base class with Leaflet's {@link L.Evented}.
  */
 export default function EventMixin (base) {
   return class extends base {

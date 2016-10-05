@@ -19,8 +19,10 @@ import * as C from 'covutils'
  * 
  * @example <caption>Non-module access</caption>
  * L.coverage.popup.TimeSeriesPlot
+ * 
+ * @extends {L.Popup}
  */
-export default class TimeSeriesPlot extends L.Popup {
+export default class TimeSeriesPlotC3 extends L.Popup {
   
   /**
    * Creates a time series plot popup.

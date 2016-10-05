@@ -16,9 +16,12 @@
     "build": "npm run build-src && npm run build-min",
     "build-src": "jspm bundle-sfx app/main bundle.src.js --skip-source-maps",
     "build-min": "jspm bundle-sfx app/main bundle.min.js --skip-source-maps --minify",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "docs": "esdoc -c esdoc.json"
   },
   "devDependencies": {
+    "esdoc": "^0.4.8",
+    "esdoc-importpath-plugin": "0.0.1",
     "http-server": "^0.9.0",
     "jspm": "^0.16.46"
   },

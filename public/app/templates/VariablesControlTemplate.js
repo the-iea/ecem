@@ -1,4 +1,8 @@
-export default
+/**
+ * The template for the {@link VariablesControl}.
+ * @type {string}
+ */
+let VariablesControlTemplate =
 `<div class="variables-control buttongroup-control panel panel-default">
   <div class="panel-heading text-center">
     <h5>Variables</h5>
@@ -8,7 +12,7 @@ export default
     <button type="button" class="btn btn-ecem btn-variables-climate">Climate</button>
     <div class="btn-group-form-controls">
       <div class="radio">
-        <label><input type="radio" name="variable" value="T2M" checked> Air temperature at 2m</label>
+        <label><input type="radio" name="variable" value="T2M"> Air temperature at 2m</label>
       </div>
       <div class="radio">
         <label><input type="radio" name="variable" value="P"> Precipitation</label>
@@ -66,3 +70,5 @@ export default
     </div>
   </div>
 </div>`
+
+export default VariablesControlTemplate
