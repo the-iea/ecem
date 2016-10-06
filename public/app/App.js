@@ -10,7 +10,7 @@ import Modal from 'bootstrap-native/lib/modal-native.js'
 
 // CovJSON
 import * as CovJSON from 'covjson-reader'
-import * as C from 'covutils'
+import * as CovUtils from 'covutils'
 
 // Mappings between country and cluster IDs/labels
 import Countries from './data/countries.js'
@@ -186,7 +186,7 @@ export default class App {
           labels: [paramKey],
           className: 'timeseries-popup',
           maxWidth: 600,
-          title: 'ERA ' + paramKey + ' for ' + C.getLanguageString(Countries[countryCode])
+          title: 'ERA ' + paramKey + ' for ' + CovUtils.getLanguageString(Countries[countryCode])
         }).setLatLng(latlng)
           .addTo(this.map)
       })
@@ -208,7 +208,7 @@ export default class App {
               types: ['shadedinterval'],
               className: 'timeseries-popup',
               maxWidth: 600,
-              title: 'GCM ' + paramKey + ' ensemble for ' + C.getLanguageString(Countries[countryCode])
+              title: 'GCM ' + paramKey + ' ensemble for ' + CovUtils.getLanguageString(Countries[countryCode])
             }).setLatLng(latlng)
               .addTo(this.map)
           })
@@ -225,7 +225,7 @@ export default class App {
           labels: [paramKey],
           className: 'timeseries-popup',
           maxWidth: 600,
-          title: 'ERA ' + paramKey + ' for ' + clusterCode + ' (' + C.getLanguageString(Countries[countryCode]) + ')'
+          title: 'ERA ' + paramKey + ' for ' + clusterCode + ' (' + CovUtils.getLanguageString(Countries[countryCode]) + ')'
         }).setLatLng(latlng)
           .addTo(this.map)
       })
@@ -244,7 +244,7 @@ export default class App {
               types: ['shadedinterval'],
               className: 'timeseries-popup',
               maxWidth: 600,
-              title: 'GCM ' + paramKey + ' ensemble for ' + clusterCode + ' (' + C.getLanguageString(Countries[countryCode]) + ')'
+              title: 'GCM ' + paramKey + ' ensemble for ' + clusterCode + ' (' + CovUtils.getLanguageString(Countries[countryCode]) + ')'
             }).setLatLng(latlng)
               .addTo(this.map)
           })

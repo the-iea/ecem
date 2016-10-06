@@ -29,7 +29,7 @@
  */
 
 /**
- * @external {C} https://doc.esdoc.org/github.com/Reading-eScience-Centre/covutils/
+ * @external {CovUtils} https://doc.esdoc.org/github.com/Reading-eScience-Centre/covutils/
  */
 
 /**
