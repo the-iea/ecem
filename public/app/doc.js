@@ -1,4 +1,9 @@
-// ESDoc can't handle multiple @external definitions in a single comment block.
+/**
+ * This file contains several external identifier definitions for ESDoc which are used throughout
+ * the code in method/function/class doc strings.
+ */
+
+// ESDoc can't handle multiple @external definitions in a single comment block, each has to be in its own block.
 
 /**
  * @external {HTMLElement} https://developer.mozilla.org/en/docs/Web/API/HTMLElement
@@ -18,6 +23,14 @@
 
 /**
  * @external {L.Popup} http://leafletjs.com/reference-1.0.0.html#popup
+ */
+
+/**
+ * @external {L.Marker} http://leafletjs.com/reference-1.0.0.html#marker
+ */
+
+/**
+ * @external {L.GeoJSON} http://leafletjs.com/reference-1.0.0.html#geojson
  */
 
 /**

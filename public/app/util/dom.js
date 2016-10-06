@@ -4,6 +4,10 @@
  * 
  * @example
  * let element = $$('.myclass')
+ * 
+ * @param {string} selector A CSS selector.
+ * @param {string|Element} [parent] The element to search within, or `document` by default.
+ * @returns {Element}
  */
 export function $$ (selector, parent) {
   if (typeof parent === 'string') {
@@ -19,6 +23,10 @@ export function $$ (selector, parent) {
  * 
  * @example
  * let items = $('.item', '#list')
+ * 
+ * @param {string} selector A CSS selector.
+ * @param {string|Element} [parent] The element to search within, or `document` by default.
+ * @returns {Array<Element>}
  */
 export function $ (selector, parent) {
   if (typeof parent === 'string') {
@@ -29,10 +37,14 @@ export function $ (selector, parent) {
 }
 
 /**
- * Adds the given elements as children to the given parent element.
+ * Adds the given nodes as children to the given parent node.
  * 
- * @param {string|Node|Array<Node>} nodes The elements to add to `el`.
- * @param {Node} el The parent element.
+ * @param {string|Node|Array<Node>} nodes The nodes to add to `el`.
+ * @param {Node} el The parent node.
+ * 
+ * @example
+ * let elements = HTML('<li>foo</li><li>bar</li>')
+ * add(elements, document.body)
  */
 export function add (nodes, el) {
   if (typeof nodes === 'string') {
@@ -52,9 +64,9 @@ export function add (nodes, el) {
  * @return {Element}
  * 
  * @example 
- * var s = '<li>text</li>'
- * var el = HTMLone(s)
- * document.body.appendChild(el)
+ * let html = '<li>text</li>'
+ * let element = HTMLone(s)
+ * document.body.appendChild(element)
  */
 export function HTMLone (html) {
   let div = document.createElement('div')
@@ -66,10 +78,13 @@ export function HTMLone (html) {
 /**
  * Turns an HTML string into an array of DOM elements.
  * 
+ * @param {string} html The HTML string out of which to create the single DOM element.
+ * @return {Array<Element>}
+ * 
  * @example
- * var s = '<li>foo</li><li>bar</li>'
- * var els = HTML(s)
- * add(els, document.body)
+ * let html = '<li>foo</li><li>bar</li>'
+ * let elements = HTML(html)
+ * add(elements, document.body)
  */
 export function HTML (html) {
   let div = document.createElement('div')

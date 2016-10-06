@@ -1,12 +1,10 @@
-// Copied from leaflet-coverage (currently compatible to Leaflet 0.7 only)
+// Copied from leaflet-coverage and made Leaflet 1.0 compatible
 
 import L from 'leaflet'
 import c3 from 'c3'
 import './c3CullingMax.js'
 
 import * as CovUtils from 'covutils'
-
-// TODO DRY: nearly identical to VerticalProfilePlot
 
 /**
  * Displays a popup with an interactive plot showing the data
@@ -16,9 +14,6 @@ import * as CovUtils from 'covutils'
  * 
  * @example
  * layer.bindPopup(new TimeSeriesPlot(coverage))
- * 
- * @example <caption>Non-module access</caption>
- * L.coverage.popup.TimeSeriesPlot
  * 
  * @extends {L.Popup}
  */

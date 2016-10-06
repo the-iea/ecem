@@ -1,4 +1,4 @@
-// adapted from leaflet-coverage (currently compatible to Leaflet 0.7 only)
+// Copied from leaflet-coverage and made Leaflet 1.0 compatible
 
 import concatMap from 'concat-map'
 import L from 'leaflet'
@@ -15,8 +15,6 @@ HighchartsOfflineExporting(Highcharts)
 
 import * as CovUtils from 'covutils'
 
-// TODO DRY: nearly identical to VerticalProfilePlot
-
 /**
  * Displays a popup with an interactive plot showing the data
  * of a time series coverage (all axes fixed except time).
@@ -25,9 +23,6 @@ import * as CovUtils from 'covutils'
  * 
  * @example
  * layer.bindPopup(new TimeSeriesPlot(coverage))
- * 
- * @example <caption>Non-module access</caption>
- * L.coverage.popup.TimeSeriesPlot
  * 
  * @extends {L.Popup}
  */

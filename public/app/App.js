@@ -232,9 +232,9 @@ export default class App {
   }
   
   showClusterClimateProjectionPlot (clusterCode, paramKey, latlng) {
-    paramKey = ' ' + paramKey
+    paramKey = ' ' + paramKey // TODO remove this once the plot is implemented
     // fake plot just to get no-data message
-    this.data.GCM_country
+    this.data.GCM_country // TODO replace with correct coverage object
       .then(cov => cov.subsetByValue({country: 'DE'})
           .then(cov => {
             let countryCode = Clusters[clusterCode]
