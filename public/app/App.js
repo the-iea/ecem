@@ -58,6 +58,7 @@ export default class App {
       maxZoom: 6,
       attributionControl: false
     })
+    /** @type {L.Map} */
     this.map = map
     
     // center popups
@@ -71,13 +72,41 @@ export default class App {
       map.panTo(map.unproject(px),{animate: true})
     })
     
+    this._createControls()
+    
+    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map)
+    
+    this._data = {}
+    this._data.ERA_country = CovJSON.read('app/data/ERA_country.covjson')
+    this._data.ERA_cluster = CovJSON.read('app/data/ERA_cluster.covjson')
+    this._data.GCM_country = CovJSON.read('app/data/GCM_country.covjson')
+    
+    loadClusterLayer('app/data/clusters.geojson').then(layer => {
+      /** @type {L.GeoJSON} */
+      this.clusterLayer = layer
+        .on('click', e => {
+          this._handleClusterClick(e.layer)
+        })
+    })
+    loadCountryLayer('app/data/countries.geojson').then(layer => {
+      /** @type {L.GeoJSON} */
+      this.countryLayer = layer
+        .on('click', e => {
+          this._handleCountryClick(e.layer)
+        }).addTo(map)
+    })
+  }
+
+  _createControls () {
+    let map = this.map
     map.zoomControl.setPosition('topright')
     
     new InfoSignControl()
       .on('click', () => {
         new Modal($$('#infoModal')).open()
       }).addTo(map)   
-      
+    
+    /** @type {ClusterModeControl} */
     this.clusterModeControl = new ClusterModeControl()
       .on('change', e => {
         if (e.clusters) {
@@ -89,99 +118,91 @@ export default class App {
           this.countryLayer.fire('fill')
           this.countryLayer.fire('showmarkers')
         }
-        if (this.map.hasLayer(this.lastPopup)) {
-          this.map.removeLayer(this.lastPopup)
+        if (this.map.hasLayer(this._lastPopup)) {
+          this.map.removeLayer(this._lastPopup)
         }
       }).addTo(map)
     
+    /** @type {TimePeriodControl} */
     this.timePeriodControl = new TimePeriodControl({initialActive: 'historic'})
       .on('change', () => {
-        this.refreshPlotIfVisible()
+        this._refreshPlotIfVisible()
       }).addTo(map)
-      
+    
+    /** @type {VariablesControl} */
     this.variablesControl = new VariablesControl({initialActive: 'climate'})
       .on('variablechange', () => {
-        this.refreshPlotIfVisible()
+        this._refreshPlotIfVisible()
       }).addTo(map)
       
     let helpEl = HelpControl.createElement()
     add(helpEl, $$('#map'))
-        
-    //L.control.scale().addTo(map)
-    
-    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map)
-    
-    this.data = {}
-    this.data.ERA_country = CovJSON.read('app/data/ERA_country.covjson')
-    this.data.ERA_cluster = CovJSON.read('app/data/ERA_cluster.covjson')
-    this.data.GCM_country = CovJSON.read('app/data/GCM_country.covjson')
-    
-    loadClusterLayer('app/data/clusters.geojson').then(layer => {
-      this.clusterLayer = layer
-        .on('click', e => {
-          this.handleClusterClick(e.layer)
-        })
-    })
-    loadCountryLayer('app/data/countries.geojson').then(layer => {
-      this.countryLayer = layer
-        .on('click', e => {
-          this.handleCountryClick(e.layer)
-        }).addTo(map)
-    })
   }
-  
-  skipNextPlotCentering () {
-    this._skipNextPopupCentering = true
-  }
-  
-  refreshPlotIfVisible () {
-    if (!this.map.hasLayer(this.lastPopup)) {
+    
+  _refreshPlotIfVisible () {
+    if (!this.map.hasLayer(this._lastPopup)) {
       return
     }
-    this.skipNextPlotCentering()
-    let lastPopup = this.lastPopup
+    this._skipNextPopupCentering = true
+    let lastPopup = this._lastPopup
     if (this.clusterModeControl.clusters) {
-      this.handleClusterClick(this.lastClickedLayer)
+      this._handleClusterClick(this._lastClickedLayer)
     } else {
-      this.handleCountryClick(this.lastClickedLayer)
+      this._handleCountryClick(this._lastClickedLayer)
     }
     // close old popup a little later so that flashing is avoided
     setTimeout(() => this.map.removeLayer(lastPopup), 500)
   }
   
-  handleCountryClick (layer) {
-    this.lastClickedLayer = layer
+  _handleCountryClick (layer) {
+    this._lastClickedLayer = layer
     let countryCode = layer.feature.properties.country_code
     let paramKey = this.variablesControl.variable
     
     if (this.timePeriodControl.name === 'historic') {
-      this.showCountryHistoricPlot(countryCode, paramKey, layer.getCenter())
+      this.showCountryHistoricPlot(countryCode, paramKey)
     } else if (this.timePeriodControl.name === 'climate-projections') {
-      this.showCountryClimateProjectionPlot(countryCode, paramKey, layer.getCenter())
+      this.showCountryClimateProjectionPlot(countryCode, paramKey)
     } else {
       // not implemented
     }
   }
   
-  handleClusterClick (layer) {
-    this.lastClickedLayer = layer
+  _handleClusterClick (layer) {
+    this._lastClickedLayer = layer
     let clusterCode = layer.feature.properties.cluster_code
     let paramKey = this.variablesControl.variable
     
     if (this.timePeriodControl.name === 'historic') {
-      this.showClusterHistoricPlot(clusterCode, paramKey, layer.getCenter())
+      this.showClusterHistoricPlot(clusterCode, paramKey)
     } else if (this.timePeriodControl.name === 'climate-projections') {
-      this.showClusterClimateProjectionPlot(clusterCode, paramKey, layer.getCenter())
+      this.showClusterClimateProjectionPlot(clusterCode, paramKey)
     } else {
       // not implemented
     }
   }
+
+  _getCountryFeatureLayer (code) {
+    return this.countryLayer.getLayers().find(l => l.feature.properties.country_code === code)
+  }
+
+  _getClusterFeatureLayer (code) {
+    return this.clusterLayer.getLayers().find(l => l.feature.properties.cluster_code === code)
+  }
   
-  showCountryHistoricPlot (countryCode, paramKey, latlng) {
-    this.data.ERA_country
+  /**
+   * Displays the historic time series plot for a given country and parameter/variable.
+   * 
+   * @param {string} countryCode The 2-letter upper-case country code, e.g. DE.
+   * @param {string} paramKey The parameter/variable key within the CovJSON timeseries file. 
+   */
+  showCountryHistoricPlot (countryCode, paramKey) {
+    let latlng = this._getCountryFeatureLayer(countryCode).getCenter()
+
+    this._data.ERA_country
       .then(cov => cov.subsetByValue({country: countryCode}))
       .then(cov => {
-        this.lastPopup = new TimeSeriesPlot(cov, {
+        this._lastPopup = new TimeSeriesPlot(cov, {
           keys: [paramKey],
           labels: [paramKey],
           className: 'timeseries-popup',
@@ -192,8 +213,16 @@ export default class App {
       })
   }
   
-  showCountryClimateProjectionPlot (countryCode, paramKey, latlng) {
-    this.data.GCM_country
+  /**
+   * Displays the climate projection time series plot for a given country and parameter/variable.
+   * 
+   * @param {string} countryCode The 2-letter upper-case country code, e.g. DE.
+   * @param {string} paramKey The parameter/variable key within the CovJSON timeseries file.
+   */
+  showCountryClimateProjectionPlot (countryCode, paramKey) {
+    let latlng = this._getCountryFeatureLayer(countryCode).getCenter()
+
+    this._data.GCM_country
       .then(cov => {
         return cov.loadDomain()
           .then(domain => {
@@ -202,7 +231,7 @@ export default class App {
             return cov.subsetByValue({country: countryCode, t: {start: '1979', stop: tMax}})
           })
           .then(cov => {
-            this.lastPopup = new TimeSeriesPlot([cov, cov, cov], {
+            this._lastPopup = new TimeSeriesPlot([cov, cov, cov], {
               keys: [[paramKey, paramKey + '05', paramKey + '95']],
               labels: [[paramKey, '5th/95th percentile']],
               types: ['shadedinterval'],
@@ -215,12 +244,20 @@ export default class App {
       })
   }
   
-  showClusterHistoricPlot (clusterCode, paramKey, latlng) {
-    this.data.ERA_cluster
+  /**
+   * Displays the historic time series plot for a given cluster and parameter/variable.
+   * 
+   * @param {string} clusterCode The 4-letter upper-case cluster code, e.g. 31DE.
+   * @param {string} paramKey The parameter/variable key within the CovJSON timeseries file.
+   */
+  showClusterHistoricPlot (clusterCode, paramKey) {
+    let latlng = this._getClusterFeatureLayer(clusterCode).getCenter()
+
+    this._data.ERA_cluster
       .then(cov => cov.subsetByValue({cluster: clusterCode}))
       .then(cov => {
         let countryCode = Clusters[clusterCode]
-        this.lastPopup = new TimeSeriesPlot(cov, {
+        this._lastPopup = new TimeSeriesPlot(cov, {
           keys: [paramKey],
           labels: [paramKey],
           className: 'timeseries-popup',
@@ -231,14 +268,24 @@ export default class App {
       })
   }
   
-  showClusterClimateProjectionPlot (clusterCode, paramKey, latlng) {
+  /**
+   * Displays the climate projection time series plot for a given cluster and parameter/variable.
+   * 
+   * NOTE: This is not implemented yet and displays a no data message.
+   * 
+   * @param {string} clusterCode The 4-letter upper-case cluster code, e.g. 31DE.
+   * @param {string} paramKey The parameter/variable key within the CovJSON timeseries file.
+   */
+  showClusterClimateProjectionPlot (clusterCode, paramKey) {
+    let latlng = this._getClusterFeatureLayer(clusterCode).getCenter()
+
     paramKey = ' ' + paramKey // TODO remove this once the plot is implemented
     // fake plot just to get no-data message
-    this.data.GCM_country // TODO replace with correct coverage object
+    this._data.GCM_country // TODO replace with correct coverage object
       .then(cov => cov.subsetByValue({country: 'DE'})
           .then(cov => {
             let countryCode = Clusters[clusterCode]
-            this.lastPopup = new TimeSeriesPlot([cov, cov, cov], {
+            this._lastPopup = new TimeSeriesPlot([cov, cov, cov], {
               keys: [[paramKey, paramKey + '05', paramKey + '95']],
               labels: [[paramKey, '5th/95th percentile']],
               types: ['shadedinterval'],
