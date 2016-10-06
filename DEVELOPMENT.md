@@ -13,14 +13,14 @@ see the `preprocess/data` folder.
 The preprocessing scripts transform these files into [CovJSON](https://covjson.org), [GeoJSON](http://geojson.org),
 and JavaScript files, respectively, see the `public/app/data` folder.
 The two main reasons for this transformation are to reduce data volume and simplify web application development.
-See the <preprocess/README.md> file for details on the preprocessing scripts.
+See the [preprocess/README.md](preprocess/README.md) file for details on the preprocessing scripts.
 
 The web application is written in [ECMAScript 2015](https://babeljs.io/docs/learn-es2015/)
 with the help of the [jspm package manager](http://jspm.io/)
 which allows to easily add dependencies from sources such as [npm](https://www.npmjs.com/) or GitHub repositories and
 handles bundling and minification of the application for deployment. It also provides a development mode
 with automatic incremental rebuilds which speeds up and simplifies development.
-See the <public/README.md> file for details on the structure of the web application.
+See the [public/README.md](public/README.md) file for details on the structure of the web application.
 
 ## Local development
 
@@ -44,6 +44,8 @@ python main.py
 
 The script automatically copies the output files into the relevant places of the web application.
 
+See the [preprocess/README.md](preprocess/README.md) file for details on the preprocessing scripts.
+
 ### Web application
 
 First, install [Node.js](https://nodejs.org/) if not done already.
@@ -62,6 +64,8 @@ Now go to <http://localhost:8095>. After a few seconds you should see the websit
 While running in development mode, any code can be changed and a simple browser page refresh reflects that change.
 Note that this flexibility is offset with slightly longer page loading times during development --
 when deployed those delays will disappear as all files are bundled together and minified.
+
+See the [public/README.md](public/README.md) file for details on the structure of the web application.
 
 ## Deployment
 

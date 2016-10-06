@@ -1,5 +1,9 @@
 # Web application
 
+[API docs](https://doc.esdoc.org/github.com/the-iea/ecem/) (generate locally with `npm run docs`)
+
+## Dependencies
+
 The used package manager is [jspm](http://jspm.io/).
 
 The user interface is created using the following packages:
