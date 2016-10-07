@@ -12,7 +12,7 @@
     },
     "referencing": [
       {
-        "components": ["cluster"],
+        "coordinates": ["cluster"],
         "system": {
           "type": "IdentifierRS",
           "label": {
@@ -508,7 +508,7 @@
         }
       },
       {
-        "components": ["t"],
+        "coordinates": ["t"],
         "system": {
           "type": "TemporalRS",
           "calendar": "Gregorian"

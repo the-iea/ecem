@@ -12,7 +12,7 @@
     },
     "referencing": [
       {
-        "components": ["country"],
+        "coordinates": ["country"],
         "system": {
           "type": "IdentifierRS",
           "id": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2",
@@ -195,7 +195,7 @@
         }
       },
       {
-        "components": ["t"],
+        "coordinates": ["t"],
         "system": {
           "type": "TemporalRS",
           "calendar": "Gregorian"
