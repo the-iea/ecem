@@ -5,11 +5,13 @@ import os.path
 import json
 from string import Template
 
-from ecem.util import save_json, PATH_DATA, PATH_GENERATED, PATH_APP_DATA
+from ecem.util import save_json, PATH_DATA, PATH_TEMPLATES, PATH_GENERATED, PATH_APP_DATA
 
 # Input files
 PATH_COUNTRYNAMES = os.path.join(PATH_DATA, 'ECEM_countrynames.csv')
-PATH_OBJ_JS_TEMPLATE = os.path.join(PATH_DATA, 'obj.js_template')
+
+# Output templates
+PATH_OBJ_JS_TEMPLATE = os.path.join(PATH_TEMPLATES, 'obj.js_template')
 
 # Output files
 PATH_COUNTRYNAMES_JS = os.path.join(PATH_GENERATED, 'countries.js')

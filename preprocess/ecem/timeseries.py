@@ -2,15 +2,12 @@ import os.path
 import shutil
 import csv
 import json
-from ecem.util import load_json, save_covjson, PATH_DATA, PATH_GENERATED, PATH_APP_DATA
+from ecem.util import load_json, save_covjson, PATH_DATA, PATH_TEMPLATES, PATH_GENERATED, PATH_APP_DATA
 from ecem.countries import get_countries
 from ecem.clusters import get_clusters
 
 # Input files
 PATH_TIMESERIES = os.path.join(PATH_DATA, 'timeseries')
-PATH_TIMESERIES_COUNTRY_MONTHLY_COVJSON_TEMPLATE = os.path.join(PATH_TIMESERIES, 'timeseries_country_monthly.covjson_template')
-PATH_TIMESERIES_COUNTRY_YEARLY_PERCENTILES_COVJSON_TEMPLATE = os.path.join(PATH_TIMESERIES, 'timeseries_country_yearly_percentiles.covjson_template')
-PATH_TIMESERIES_CLUSTER_MONTHLY_COVJSON_TEMPLATE = os.path.join(PATH_TIMESERIES, 'timeseries_cluster_monthly.covjson_template')
 
 PATH_ERA_Tmean_countries_sample_CSV = os.path.join(PATH_TIMESERIES, 'ERA_Tmean_countries_sample.csv')
 PATH_ERA_Tmean_cluster_sample_CSV = os.path.join(PATH_TIMESERIES, 'ERA_Tmean_cluster_sample.csv')
@@ -18,6 +15,11 @@ PATH_ERA_Tmean_cluster_sample_CSV = os.path.join(PATH_TIMESERIES, 'ERA_Tmean_clu
 PATH_GCM_Tmean_country_sample_CSV = os.path.join(PATH_TIMESERIES, 'GCM_Tmean_countries_sample_ens_mean.csv')
 PATH_GCM_Tmean05_country_sample_CSV = os.path.join(PATH_TIMESERIES, 'GCM_Tmean_countries_sample_ens_perc05.csv')
 PATH_GCM_Tmean95_country_sample_CSV = os.path.join(PATH_TIMESERIES, 'GCM_Tmean_countries_sample_ens_perc95.csv')
+
+# Output templates
+PATH_TIMESERIES_COUNTRY_MONTHLY_COVJSON_TEMPLATE = os.path.join(PATH_TEMPLATES, 'timeseries_country_monthly.covjson_template')
+PATH_TIMESERIES_COUNTRY_YEARLY_PERCENTILES_COVJSON_TEMPLATE = os.path.join(PATH_TEMPLATES, 'timeseries_country_yearly_percentiles.covjson_template')
+PATH_TIMESERIES_CLUSTER_MONTHLY_COVJSON_TEMPLATE = os.path.join(PATH_TEMPLATES, 'timeseries_cluster_monthly.covjson_template')
 
 # Output files
 PATH_ERA_country_COVJSON = os.path.join(PATH_GENERATED, 'ERA_country.covjson')

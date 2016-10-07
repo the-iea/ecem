@@ -6,6 +6,9 @@ from collections import OrderedDict
 # folder path of the input files
 PATH_DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
 
+# folder path of the output template files
+PATH_TEMPLATES = os.path.join(os.path.dirname(__file__), '..', 'templates')
+
 # folder path of the generated output files
 PATH_GENERATED = os.path.join(os.path.dirname(__file__), '..', 'generated')
 

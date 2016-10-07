@@ -10,7 +10,7 @@ ogr.UseExceptions()
 osr.UseExceptions()
 
 import ecem.countries
-from ecem.util import minify_json, PATH_DATA, PATH_GENERATED, PATH_APP_DATA
+from ecem.util import minify_json, PATH_DATA, PATH_TEMPLATES, PATH_GENERATED, PATH_APP_DATA
 
 # OGR driver names
 ESRI_SHP = 'ESRI Shapefile'
@@ -26,9 +26,11 @@ GEOJSON_COUNTRY_CODE = 'country_code'
 GEOJSON_COLOR_IDX = 'color_idx'
 
 # Input files
-PATH_OBJ_JS_TEMPLATE = os.path.join(PATH_DATA, 'obj.js_template')
 PATH_CLUSTERNAMES = os.path.join(PATH_DATA, 'ECEM_cluster_names.csv')
 PATH_CLUSTERSHP = os.path.join(PATH_DATA, 'cluster_borders', 'Clusters_Borders.shp')
+
+# Output templates
+PATH_OBJ_JS_TEMPLATE = os.path.join(PATH_TEMPLATES, 'obj.js_template')
 
 # Output files
 PATH_CLUSTERS_JS = os.path.join(PATH_GENERATED, 'clusters.js')
