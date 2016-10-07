@@ -1,6 +1,6 @@
 # Web application
 
-[API docs](https://doc.esdoc.org/github.com/the-iea/ecem/) (generate locally with `npm run docs`)
+[API docs](https://doc.esdoc.org/github.com/the-iea/ecem/) ([regenerate at esdoc.org](https://doc.esdoc.org/) or generate locally with `npm run docs`)
 
 ## Dependencies
 
